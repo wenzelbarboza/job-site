@@ -24,6 +24,17 @@
   height: 100%;
   background: radial-gradient(circle, transparent, rgba(0, 0, 0, 0.9));
 } */
+
+/* height of header and rest of bady */
+/* .header-height{
+  height: 5rem;
+}
+.body-height{
+  
+min-height: calc(100vh - 60px);
+} */
+
+/* background grid style */
 .grid-background {
   position: fixed;
   top: 0;

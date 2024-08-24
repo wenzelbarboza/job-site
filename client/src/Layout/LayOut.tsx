@@ -1,17 +1,21 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "../components/Header";
 
-// TODO fix grid layout
+//TODO fix grid layout
 export const LayOut = () => {
   return (
     <>
-      <div>
-        <div className="grid-background border-4 border-green-300"></div>
+      <div className="">
+        <div className="grid-background "></div>
         <main className="min-h-screen container">
-          <Header />
-          <Outlet />
+          <div className=" border-yellow-400 top-0 ">
+            <Header />
+          </div>
+          <div className=" border-green-400 ">
+            <Outlet />
+          </div>
         </main>
-        <div className="p-10 text-center bg-gray-800 mt-10">footer</div>
+        <div className="p-10 text-center bg-gray-800">footer</div>
       </div>
     </>
   );
