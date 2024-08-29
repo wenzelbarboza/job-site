@@ -20,13 +20,15 @@
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.2.0",
     "embla-carousel-react": "^8.2.0",
+    "firebase": "^10.13.0",
     "lucide-react": "^0.428.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

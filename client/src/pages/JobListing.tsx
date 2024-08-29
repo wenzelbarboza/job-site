@@ -1,3 +1,3 @@
 export const JobListing = () => {
-  return <h1>JobListing</h1>;
+  return <h1 className="bg-green-500">JobListing</h1>;
 };

@@ -8,7 +8,7 @@ export const LayOut = () => {
       <div className="">
         <div className="grid-background "></div>
         <main className="min-h-screen container">
-          <div className=" border-yellow-400 top-0 ">
+          <div>
             <Header />
           </div>
           <div className=" border-green-400 ">

@@ -59,6 +59,14 @@
   }
 }
 
+@layer utilities{
+  .gradient{
+    @apply 
+
+    
+  }
+}
+
 @layer base {
   * {
     @apply border-border;
