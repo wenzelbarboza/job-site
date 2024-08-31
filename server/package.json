@@ -8,9 +8,9 @@
     "start": "node dist/index.js",
     "vercel-buils": "echo hello",
     "watch:ts": "tsc -w",
-    "watch:node": "nodemon dist/index.js",
+    "watch:node": "nodemon ./dist/api/index.js",
     "generate": "drizzle-kit generate",
-    "migrate": "drizzle-kit migrate"
+    "drizzle:migrate": "node -r dotenv/config ./dist/src/db/migrate.js"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1",
     "express": "^4.19.2",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",

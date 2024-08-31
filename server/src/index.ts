@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
+import "dotenv/config";
 const app = express();
 
 app.use(express.urlencoded({ extended: false }));
@@ -25,5 +26,7 @@ app.use("/api/v1", userRouter);
 
 //global catch
 app.use(globalCatch);
+
+app.listen(5001, () => console.log("server running on port 5001"));
 
 export default app;

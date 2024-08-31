@@ -1,0 +1,1 @@
+ALTER TABLE "jobsite_users" ADD PRIMARY KEY ("id");
