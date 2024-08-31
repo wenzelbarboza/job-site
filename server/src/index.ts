@@ -1,19 +1,19 @@
 import express, { Request, Response } from "express";
 import cookieParser from "cookie-parser";
-
+import cors from "cors";
+import helmet from "helmet";
 const app = express();
 
-const port = 5001;
-
-app.use(express.urlencoded());
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static("public"));
+app.use(cors());
+app.use(helmet());
+// app.use(express.static("public"));
 
 //routes imports
 import { userRouter } from "./routes/user.routes";
 import { globalCatch } from "./utils/globalCatch";
-import { asyncHandler } from "./utils/asyncHandler";
 
 app.get("/", (req, res) => {
   return res.status(200).json({
@@ -26,6 +26,6 @@ app.use("/api/v1", userRouter);
 //global catch
 app.use(globalCatch);
 
-app.listen(port, () => {
-  console.log("listning on port", port);
-});
+app.listen(3003, () => console.log("Server ready on port 3003."));
+
+export default app;
