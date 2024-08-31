@@ -14,7 +14,7 @@ export const newUser = asyncHandler(
       // console.log(zRes);
 
       return res.status(200).json({
-        message: "Welcome, inside new user route",
+        message: "Welcome, inside new user route1",
       });
     } catch (error) {
       throw error;
