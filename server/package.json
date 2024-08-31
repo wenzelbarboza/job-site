@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
     "start": "node dist/index.js",
+    "build": "tsc",
+    "vercel-buils": "echo hello",
     "watch:ts": "tsc -w",
     "watch:node": "nodemon dist/index.js",
     "generate": "drizzle-kit generate",
