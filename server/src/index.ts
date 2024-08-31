@@ -26,6 +26,4 @@ app.use("/api/v1", userRouter);
 //global catch
 app.use(globalCatch);
 
-app.listen(3003, () => console.log("Server ready on port 3003."));
-
 export default app;
