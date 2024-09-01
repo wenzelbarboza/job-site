@@ -3,6 +3,6 @@ import { newUser } from "../controllers/user.controllers";
 
 const userRouter = express.Router();
 //api/v1/user/new
-userRouter.get("/user/new", newUser);
+userRouter.post("/user/new", newUser);
 
 export { userRouter };
