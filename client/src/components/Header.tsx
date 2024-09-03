@@ -14,10 +14,10 @@ export const Header = () => {
             <img src="../../public/logo.png" className="h-full w-full" alt="" />
           </Link>
         </div>
-        <div className="flex justify-between items-center gap-2  ml-10">
+        <div className="flex justify-between items-center gap-2  ">
           <Link to={""}>
             <Button onClick={() => setIsOpen((prev: boolean) => !prev)}>
-              sign up
+              Login
             </Button>
           </Link>
           <LogIn isOpen={isOpen} setIsOpen={setIsOpen} />

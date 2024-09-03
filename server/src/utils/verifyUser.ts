@@ -4,12 +4,6 @@ import { verifyAccessToken } from "./tokenUtils";
 import { MyJwtPayload } from "./types";
 import { ApiError } from "./apiError";
 
-declare module "express-serve-static-core" {
-  interface Request {
-    user?: number; // Adjust the type as necessary
-  }
-}
-
 export const verifyUser = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;

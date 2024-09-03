@@ -1,5 +1,15 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState, useRef, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { Button } from "../components/ui/button";
+import { Link } from "react-router-dom";
 
 type props = {
   isOpen: boolean;
@@ -7,20 +17,43 @@ type props = {
 };
 
 export const LogIn = ({ isOpen, setIsOpen }: props) => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [formError, setFormError] = useState({
+    email: "",
+    password: "",
+  });
   const formRef = useRef<HTMLDivElement>(null);
 
-  const handleSignUp = () => {
-    const auth = getAuth();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("user is:", user);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const handleSignUp = async () => {
+    let flag = false;
+    if (!regex.test(formData.email)) {
+      flag = true;
+      setFormError((prev) => ({ ...prev, email: "Invalid Email" }));
+    }
+    if (formData.password.length < 8) {
+      flag = true;
+      setFormError((prev) => ({ ...prev, password: "Minimum 8 charachers" }));
+    }
+    if (flag) return;
+  };
+
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (formError.email.length != 0 && regex.test(formData.email)) {
+      setFormError((prev) => ({ ...prev, email: "" }));
+    }
+    if (formData.password.length >= 8) {
+      setFormError((prev) => ({ ...prev, password: "" }));
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   useEffect(() => {
@@ -42,55 +75,66 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
 
   return (
     <>
-      {/* <button */}
-      {/*   onClick={handleOpenClick} */}
-      {/*   className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" */}
-      {/* > */}
-      {/*   Sign Up */}
-      {/* </button> */}
-
       {isOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div
-            className="relative top-52 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+        <div className="fixed px-2 sm:p-0 inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-screen z-50">
+          <Card
+            className=" w-full sm:max-w-[350px] relative top-48 mx-auto border  shadow-lg rounded-md"
             ref={formRef}
           >
-            <div className="mt-3 text-center">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                Sign Up
-              </h3>
-              <form className="mt-2 space-y-6" onSubmit={handleSignUp}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setEmail(e.target.value)
-                  }
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Email address"
-                />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPassword(e.target.value)
-                  }
-                  required
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                  placeholder="Password"
-                />
-                <div>
-                  <button
-                    type="submit"
-                    className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    Sign Up
-                  </button>
+            <CardHeader>
+              <CardTitle>Login</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form>
+                <div className="grid w-full items-center gap-4">
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">Email</Label>
+                    <Input
+                      name="email"
+                      placeholder="Enter your email"
+                      onChange={handleFormChange}
+                    />
+                    {formError.email.length != 0 ? (
+                      <p className="text-xs text-red-500">{formError.email}</p>
+                    ) : (
+                      ""
+                    )}
+                  </div>
+                  <div className="flex flex-col space-y-1.5">
+                    <Label htmlFor="name">Password</Label>
+                    <Input
+                      name="password"
+                      placeholder="Enter your password"
+                      type="password"
+                      onChange={handleFormChange}
+                    />
+                    {formError.password.length != 0 ? (
+                      <p className="text-xs text-red-500">
+                        {formError.password}
+                      </p>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                 </div>
               </form>
-            </div>
-          </div>
+            </CardContent>
+            <CardFooter className="flex items-center flex-col">
+              <Button className="w-full" onClick={handleSignUp}>
+                Login
+              </Button>
+              <span className="text-center w-full">
+                to create account{" "}
+                <Link
+                  to={"/signup"}
+                  className="underline"
+                  onClick={() => setIsOpen(false)}
+                >
+                  signup
+                </Link>
+              </span>
+            </CardFooter>
+          </Card>
         </div>
       )}
     </>

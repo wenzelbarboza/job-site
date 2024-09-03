@@ -9,6 +9,7 @@ import { MyJob } from "./pages/MyJob";
 import { SavedJobs } from "./pages/SavedJobs";
 import { JobPage } from "./pages/JobPage";
 import { ThemeProvider } from "./components/theme-provider";
+import { SignUp } from "./pages/SignUp";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
         element: (
           //<protectedRoute>
           <SavedJobs />
+          //</ProtectedRoute>
+        ),
+      },
+      {
+        path: "signup",
+        element: (
+          //<protectedRoute>
+          <SignUp />
           //</ProtectedRoute>
         ),
       },
