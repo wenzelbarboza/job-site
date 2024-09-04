@@ -34,7 +34,7 @@ export const LandingPage = () => {
               get hired
               <img
                 className="h-14 sm:h-24 lg:h-32"
-                src="../assets/logo.png"
+                src="../../public/logo.png"
                 alt="hirred"
               />
             </span>

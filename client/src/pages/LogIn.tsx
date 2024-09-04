@@ -11,6 +11,7 @@ import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 import { useLoginMutation } from "../api/user.api";
+import { useUserStore } from "../zustand/UserStore";
 
 type props = {
   isOpen: boolean;
@@ -18,6 +19,7 @@ type props = {
 };
 
 export const LogIn = ({ isOpen, setIsOpen }: props) => {
+  const userStore = useUserStore();
   const loginMutation = useLoginMutation();
   const regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
@@ -47,6 +49,8 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       const res = await loginMutation.mutateAsync(formData);
       console.log("login response is: ", res);
       alert(JSON.stringify(res));
+      userStore.setAccessToken(res.accessToken);
+      userStore.setLoading(false);
       setIsOpen(false);
     } catch (error) {
       console.error(error);

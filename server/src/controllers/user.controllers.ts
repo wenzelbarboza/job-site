@@ -71,7 +71,7 @@ export const login = asyncHandler(
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
 
@@ -112,7 +112,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -123,9 +123,13 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const logout = asyncHandler(async (req: Request, res: Response) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies.refreshToken;
 
   try {
+    if (!refreshToken) {
+      throw new ApiError(500, "logout failed");
+    }
+
     const decoded = verifyRefreshToken(refreshToken) as MyJwtPayload;
 
     await db
@@ -133,7 +137,14 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
       .set({ refreshToken: null })
       .where(eq(users.id, decoded.userId));
 
-    res.json({ message: "Logged out successfully" });
+    res.clearCookie("refreshToken", {
+      sameSite: "lax",
+    });
+
+    res.json({
+      success: true,
+      message: "Logged out successfully",
+    });
   } catch (error) {
     res.status(500).json({ error: "Logout failed" });
   }

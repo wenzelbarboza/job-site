@@ -11,9 +11,11 @@ export const LayOut = () => {
     refreshAccessToken()
       .then((data) => {
         userStore.setAccessToken(data.accessToken);
+        userStore.setLoading(false);
         console.log("the access token fetched just now is: ", data.accessToken);
       })
       .catch((error) => {
+        userStore.setLoading(false);
         console.error(error);
       });
     return () => {};
