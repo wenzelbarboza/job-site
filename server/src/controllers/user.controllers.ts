@@ -17,7 +17,7 @@ import { MyJwtPayload } from "../utils/types";
 
 type newUserPropsType = z.infer<typeof newUserProps>;
 
-export const newUser = asyncHandler(
+export const signUp = asyncHandler(
   async (req: Request<any, any, newUserPropsType>, res: Response) => {
     try {
       let zUser = newUserProps.parse(req.body);
@@ -31,6 +31,7 @@ export const newUser = asyncHandler(
       console.log(newUser);
 
       return res.status(200).json({
+        success: true,
         message: "Registration successfull",
       });
     } catch (error) {
@@ -67,7 +68,14 @@ export const login = asyncHandler(
         .set({ refreshToken })
         .where(eq(users.id, user[0].id));
 
-      res.status(200).json({ accessToken, refreshToken });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      res.json({ accessToken });
     } catch (error) {
       throw new ApiError(500, "Login failes");
     }
@@ -75,7 +83,7 @@ export const login = asyncHandler(
 );
 
 export const refresh = asyncHandler(async (req: Request, res: Response) => {
-  const { refreshToken: refreshTokenOld } = req.body;
+  const refreshTokenOld = req.cookies.refreshToken;
 
   if (!refreshTokenOld) throw new ApiError(401, "invalid credentials");
 
@@ -101,10 +109,14 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
       .set({ refreshToken })
       .where(eq(users.id, user[0].id));
 
-    return res.status(200).json({
-      accessToken,
-      refreshToken,
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    res.json({ accessToken });
   } catch (error) {
     throw error;
   }

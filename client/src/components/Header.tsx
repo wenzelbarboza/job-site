@@ -5,7 +5,6 @@ import { LogIn } from "../pages/LogIn";
 
 export const Header = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   return (
     <>
       <nav className="w-full py-4 flex items-center justify-between">

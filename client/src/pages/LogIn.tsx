@@ -10,6 +10,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
+import { useLoginMutation } from "../api/user.api";
 
 type props = {
   isOpen: boolean;
@@ -17,6 +18,7 @@ type props = {
 };
 
 export const LogIn = ({ isOpen, setIsOpen }: props) => {
+  const loginMutation = useLoginMutation();
   const regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
 
   const [formData, setFormData] = useState({
@@ -29,7 +31,8 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
   });
   const formRef = useRef<HTMLDivElement>(null);
 
-  const handleSignUp = async () => {
+  const handleLogin = async () => {
+    console.log("formData: ", formData);
     let flag = false;
     if (!regex.test(formData.email)) {
       flag = true;
@@ -40,6 +43,14 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       setFormError((prev) => ({ ...prev, password: "Minimum 8 charachers" }));
     }
     if (flag) return;
+    try {
+      const res = await loginMutation.mutateAsync(formData);
+      console.log("login response is: ", res);
+      alert(JSON.stringify(res));
+      setIsOpen(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,11 +131,11 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
               </form>
             </CardContent>
             <CardFooter className="flex items-center flex-col">
-              <Button className="w-full" onClick={handleSignUp}>
+              <Button className="w-full" onClick={handleLogin}>
                 Login
               </Button>
               <span className="text-center w-full">
-                to create account{" "}
+                to create an account
                 <Link
                   to={"/signup"}
                   className="underline"

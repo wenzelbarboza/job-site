@@ -10,6 +10,9 @@ import { SavedJobs } from "./pages/SavedJobs";
 import { JobPage } from "./pages/JobPage";
 import { ThemeProvider } from "./components/theme-provider";
 import { SignUp } from "./pages/SignUp";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -82,7 +85,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

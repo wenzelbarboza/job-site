@@ -9,9 +9,13 @@ import {
 } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { useSignUpMutation } from "../api/user.api";
+import { useNavigate } from "react-router-dom";
 
 export const SignUp = () => {
   const regex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
+  const signUpMutation = useSignUpMutation();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -39,6 +43,19 @@ export const SignUp = () => {
       setFormError((prev) => ({ ...prev, password: "Minimum 8 charachers" }));
     }
     if (flag) return;
+
+    try {
+      await signUpMutation.mutateAsync(formData);
+      console.log("signed up successfully");
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+      });
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
