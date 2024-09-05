@@ -1,3 +1,3 @@
-export const PostJob = () => {
-  return <h1>PostJob</h1>;
+export const postjob = () => {
+  return <h1>postjob</h1>;
 };

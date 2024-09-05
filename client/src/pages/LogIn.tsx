@@ -50,7 +50,6 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       console.log("login response is: ", res);
       alert(JSON.stringify(res));
       userStore.setAccessToken(res.accessToken);
-      userStore.setLoading(false);
       setIsOpen(false);
     } catch (error) {
       console.error(error);
