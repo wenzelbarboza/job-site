@@ -7,6 +7,7 @@ import { logoutUser } from "../lib/auth";
 
 export const Header = () => {
   const accessToken = useUserStore((state) => state.accessToken);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const setAccessToken = useUserStore((state) => state.setAccessToken);
 
@@ -24,7 +25,7 @@ export const Header = () => {
       <nav className="w-full py-4 flex items-center justify-between">
         <div className=" max-w-12">
           <Link to={"/"}>
-            <img src="../../public/logo.png" className="h-full w-full" alt="" />
+            <img src="./logo.png" className="h-full w-full" alt="" />
           </Link>
         </div>
         <div className="flex justify-between items-center gap-2  ">

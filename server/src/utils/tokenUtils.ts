@@ -6,8 +6,16 @@ dotenv.config();
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "access-secret";
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refresh-secret";
 
-export function generateAccessToken(userId: number) {
-  return jwt.sign({ userId }, accessTokenSecret, { expiresIn: "15m" });
+type accessTokenType = {
+  userId: number;
+  name: string;
+  role: string;
+};
+export function generateAccessToken({ userId, name, role }: accessTokenType) {
+  console.log(userId, name, role);
+  return jwt.sign({ userId, name, role }, accessTokenSecret, {
+    expiresIn: "15m",
+  });
 }
 
 export function generateRefreshToken(userId: number) {

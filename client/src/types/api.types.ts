@@ -1,5 +1,12 @@
+// enum userRole {
+//   CANDIDATE = "CANDIDATE",
+//   EMPLOYER = "EMPLOYER",
+// }
+
 export type user = {
-  name: "string";
+  id: number;
+  name: string;
+  role: string;
 };
 
 export type signUpType = {

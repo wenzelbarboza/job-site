@@ -51,16 +51,23 @@ export const login = asyncHandler(
         .where(eq(users.email, email))
         .limit(1);
 
-      if (user.length === 0) throw new ApiError(400, "Invalid credentials");
+      if (user.length === 0) {
+        console.log("invalid user");
+      }
+      if (user.length === 0) throw new ApiError(401, "Invalid credentials");
 
       const validPassword = await bcrypt.compare(
         password,
         user[0].password as string
       );
 
-      if (!validPassword) throw new ApiError(400, "Invalid credentials");
+      if (!validPassword) throw new ApiError(401, "Invalid credentials");
 
-      const accessToken = generateAccessToken(user[0].id);
+      const accessToken = generateAccessToken({
+        userId: user[0].id,
+        name: user[0].name as string,
+        role: user[0].role as string,
+      });
       const refreshToken = generateRefreshToken(user[0].id);
 
       await db
@@ -101,7 +108,11 @@ export const refresh = asyncHandler(async (req: Request, res: Response) => {
     if (user.length === 0 || user[0].refreshToken !== refreshTokenOld)
       throw new ApiError(400, "invalid refresh token");
 
-    const accessToken = generateAccessToken(user[0].id);
+    const accessToken = generateAccessToken({
+      userId: user[0].id,
+      name: user[0].name as string,
+      role: user[0].role as string,
+    });
     const refreshToken = generateRefreshToken(user[0].id);
 
     await db

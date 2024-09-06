@@ -35,7 +35,8 @@ min-height: calc(100vh - 60px);
 } */
 
 /* background grid style */
-.grid-background {
+/* start */
+/* .grid-background {
   position: fixed;
   top: 0;
   left: 0;
@@ -69,26 +70,120 @@ min-height: calc(100vh - 60px);
   position: absolute;
   top: 0;
   left: 50%;
-  width: 18rem; /* Width of the vertical line */
+  width: 18rem; 
   height: 100%;
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0) 0%, /* Fully transparent at the left edge */
-    rgba(255, 255, 255, 0.07) 50%, /* Thicker and more opaque in the middle */
-    rgba(255, 255, 255, 0) 100% /* Fully transparent at the right edge */
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.07) 50%, 
+    rgba(255, 255, 255, 0) 100% 
   );
   background-size: 100% 100%;
-  animation: horizontalLineAnimation 20s linear infinite; /* Slow movement */
+  animation: horizontalLineAnimation 20s linear infinite; 
   pointer-events: none;
   z-index: -1;
 }
 
-/* Animation for the vertical line */
+
 @keyframes horizontalLineAnimation {
   0% {
-    transform: translateX(-100vw); /* Start off-screen to the left */
+    transform: translateX(-100vw); 
   }
   100% {
-    transform: translateX(100vw); /* Move to the right edge */
+    transform: translateX(100vw);
+  }
+} */
+/* finish */
+
+
+.grid-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
+  z-index: -1;
+  animation: gridPulse 15s ease-in-out infinite;
+}
+
+.grid-background::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0, 0, 0, 0.8) 80%);
+  pointer-events: none;
+  z-index: -1;
+  animation: vignettePulse 10s ease-in-out infinite;
+}
+
+.grid-background::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 18rem;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 100% 100%;
+  animation: horizontalLineAnimation 20s linear infinite, lineGlow 5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  animation: float 20s linear infinite;
+}
+
+@keyframes gridPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes vignettePulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes horizontalLineAnimation {
+  0% { transform: translateX(-100vw); }
+  100% { transform: translateX(100vw); }
+}
+
+@keyframes lineGlow {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% {
+    transform: translateY(-100vh) translateX(100vw);
+    opacity: 0;
   }
 }

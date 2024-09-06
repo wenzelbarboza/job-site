@@ -12,6 +12,8 @@ import { Button } from "../components/ui/button";
 import { Link } from "react-router-dom";
 import { useLoginMutation } from "../api/user.api";
 import { useUserStore } from "../zustand/UserStore";
+import { jwtDecode } from "jwt-decode";
+import { payloadType } from "../types/type";
 
 type props = {
   isOpen: boolean;
@@ -45,14 +47,29 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       setFormError((prev) => ({ ...prev, password: "Minimum 8 charachers" }));
     }
     if (flag) return;
+
     try {
       const res = await loginMutation.mutateAsync(formData);
-      console.log("login response is: ", res);
-      alert(JSON.stringify(res));
+      console.log("login response is: ", res.accessToken);
       userStore.setAccessToken(res.accessToken);
+      alert(JSON.stringify(res));
+      const decoded = jwtDecode<payloadType>(res.accessToken);
+      console.log("the access token fetched just now is: ", decoded);
+      userStore.setUser({
+        name: decoded.name,
+        role: decoded.role,
+        id: decoded.userId,
+      });
+      console.log("userStore", userStore);
+      userStore.setLoading(false);
       setIsOpen(false);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error.status == 500 || error.status == 401) {
+        alert("invalid credentials");
+      }
+      userStore.setLoading(false);
+      userStore.setAccessToken(null);
+      console.error("----error----", error);
     }
   };
 
@@ -137,6 +154,7 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
               <Button className="w-full" onClick={handleLogin}>
                 Login
               </Button>
+
               <span className="text-center w-full">
                 to create an account
                 <Link

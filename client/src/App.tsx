@@ -4,13 +4,14 @@ import { LayOut } from "./Layout/LayOut";
 import { LandingPage } from "./pages/LandingPage";
 import { Onboarding } from "./pages/Onboarding";
 import { JobListing } from "./pages/JobListing";
-import { PostJob } from "./pages/PostJob";
 import { MyJob } from "./pages/MyJob";
 import { SavedJobs } from "./pages/SavedJobs";
 import { JobPage } from "./pages/JobPage";
 import { ThemeProvider } from "./components/theme-provider";
 import { SignUp } from "./pages/SignUp";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Postjob } from "./pages/PostJob";
 
 const queryClient = new QueryClient();
 
@@ -25,9 +26,9 @@ const router = createBrowserRouter([
       {
         path: "/onboarding",
         element: (
-          //<protectedRoute>
-          <Onboarding />
-          //</ProtectedRoute>
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
         ),
       },
       {
@@ -42,7 +43,7 @@ const router = createBrowserRouter([
         path: "/post-job",
         element: (
           //<protectedRoute>
-          <PostJob />
+          <Postjob />
           //</ProtectedRoute>
         ),
       },
