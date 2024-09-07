@@ -8,6 +8,8 @@ import {
   boolean,
   pgEnum,
 } from "drizzle-orm/pg-core";
+import { refreshType } from "../models/user.models";
+import { roleEnum } from "../utils/types";
 
 const pgTable = pgTableCreator((name) => `jobsite_${name}`);
 
@@ -18,7 +20,7 @@ export const users = pgTable("users", {
   email: text("email"),
   password: text("password").default(""),
   refreshToken: text("refresh_token"),
-  role: text("role").$type<"admin" | "customer">().default("customer"),
+  role: text("role").$type<roleEnum.candidate | roleEnum.recruiter>(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

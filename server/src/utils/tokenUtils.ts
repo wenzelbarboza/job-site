@@ -9,7 +9,7 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "refresh-secret";
 type accessTokenType = {
   userId: number;
   name: string;
-  role: string;
+  role: string | null;
 };
 export function generateAccessToken({ userId, name, role }: accessTokenType) {
   console.log(userId, name, role);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
 import z from "zod";
-import { loginProps, newUserProps } from "../models/user.models";
+import { loginProps, newUserProps, refreshType } from "../models/user.models";
 import { db } from "../db/db";
 import { users } from "../db/schema";
 import bcrypt from "bcryptjs";
@@ -13,7 +13,7 @@ import {
 } from "../utils/tokenUtils";
 import { ApiError } from "../utils/apiError";
 import { JwtPayload } from "jsonwebtoken";
-import { MyJwtPayload } from "../utils/types";
+import { MyJwtPayload, refreshProps } from "../utils/types";
 
 type newUserPropsType = z.infer<typeof newUserProps>;
 
@@ -66,7 +66,7 @@ export const login = asyncHandler(
       const accessToken = generateAccessToken({
         userId: user[0].id,
         name: user[0].name as string,
-        role: user[0].role as string,
+        role: user[0].role,
       });
       const refreshToken = generateRefreshToken(user[0].id);
 
@@ -160,3 +160,25 @@ export const logout = asyncHandler(async (req: Request, res: Response) => {
     res.status(500).json({ error: "Logout failed" });
   }
 });
+
+export const setRole = asyncHandler(
+  async (req: Request<any, any, refreshProps>, res: Response) => {
+    const data = req.body;
+
+    try {
+      const { id, role } = refreshType.parse(data);
+
+      await db.update(users).set({ role }).where(eq(users.id, id));
+
+      res.status(200).json({
+        success: true,
+        message: "role updated successfully",
+        data: {
+          role,
+        },
+      });
+    } catch (error) {
+      res.status(400).json({ error: "role update failed" });
+    }
+  }
+);
