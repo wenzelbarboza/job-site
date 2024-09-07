@@ -1,36 +1,54 @@
+import { useEffect } from "react";
+import { useRoleMutate } from "../api/user.api";
 import { Button } from "../components/ui/button";
+import { useUserStore } from "../zustand/UserStore";
+import { useNavigate } from "react-router-dom";
 
 enum role {
-  CANDIDATE,
-  RECRUITER,
+  condidate = "candidate",
+  recruiter = "recruiter",
 }
 
 export const Onboarding = () => {
-  const handleRole = (role: role) => {
-    if (role == 0) {
-      console.log("candidate");
-    }
-    if (role == 1) {
-      console.log("recruiter");
+  const roleMutate = useRoleMutate();
+  const userStore = useUserStore();
+  const navigate = useNavigate();
+
+  const handleRole = async (role: role) => {
+    console.log("role inside handller: ", role);
+    try {
+      await roleMutate.mutateAsync({ id: userStore.user?.id as number, role });
+      userStore.setRole(role);
+    } catch (error) {
+      console.error(error);
     }
   };
+
+  useEffect(() => {
+    if (userStore.user?.role) {
+      const route =
+        userStore.user?.role == role.recruiter ? "/post-job" : "/jobs";
+      navigate(route);
+    }
+  }, [userStore.user?.role]);
+
   return (
-    <div className="flex flex-col items-center justify-center mt-32">
+    <div className="flex flex-col items-center justify-center mt-40">
       <h1 className="font-extrabold text-7xl tracking-tighter sm:text-8xl">
         I am a...
       </h1>
-      <div className="grid mt-16 w-full grid-cols-2 gap-4 md:px-40">
+      <div className="grid w-full grid-cols-2 gap-4 mt-16 md:px-40">
         <Button
           variant={"blue"}
           className="h-36 text-2xl"
-          onClick={() => handleRole(role.CANDIDATE)}
+          onClick={() => handleRole(role.condidate)}
         >
           Candidate
         </Button>
         <Button
           variant={"destructive"}
           className="h-36 text-2xl"
-          onClick={() => handleRole(role.RECRUITER)}
+          onClick={() => handleRole(role.recruiter)}
         >
           Recruiter
         </Button>

@@ -6,7 +6,7 @@
 export type user = {
   id: number;
   name: string;
-  role: string;
+  role: string | null;
 };
 
 export type signUpType = {
@@ -24,4 +24,9 @@ export type apiResponeType<T = unknown> = {
   success: true;
   message: "Registration successfull";
   data?: T;
+};
+
+export type roleApiType = {
+  role: string;
+  id: number;
 };

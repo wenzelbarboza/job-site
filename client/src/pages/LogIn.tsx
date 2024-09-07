@@ -57,7 +57,7 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       console.log("the access token fetched just now is: ", decoded);
       userStore.setUser({
         name: decoded.name,
-        role: decoded.role,
+        role: decoded.role ?? null,
         id: decoded.userId,
       });
       console.log("userStore", userStore);

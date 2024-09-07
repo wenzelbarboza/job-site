@@ -9,6 +9,7 @@ type userStateType = {
   setLoading: (isLoading: boolean) => void;
   setUser: (userState: user | null) => void;
   setAccessToken: (cookie: string | null) => void;
+  setRole: (role: string) => void;
 };
 
 // TODO implement loading in homepage
@@ -21,5 +22,20 @@ export const useUserStore = create<userStateType>()(
     setLoading: (isLoading) => set({ loading: isLoading }),
     setUser: (userState) => set({ user: userState }),
     setAccessToken: (cookie) => set({ accessToken: cookie }),
+    setRole: (role) => {
+      set((state) => {
+        // it is never going to be null
+        // since this is called inside a protected route
+        if (state.user == null) {
+          return state;
+        }
+        return {
+          user: {
+            ...state.user,
+            role,
+          },
+        };
+      });
+    },
   }))
 );
