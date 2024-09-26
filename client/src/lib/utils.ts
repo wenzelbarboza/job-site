@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 let isRefreshing = false;
+let hasRetried = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
   reject: (error: any) => void;
@@ -34,9 +35,13 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    console.log("inside interseptor");
     const originalRequest = error.config;
+    console.log(originalRequest);
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    console.log("status: ", error.response?.status);
+
+    if (error.response?.status === 401 && !hasRetried) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -50,7 +55,7 @@ axiosInstance.interceptors.response.use(
           });
       }
 
-      originalRequest._retry = true;
+      hasRetried = true;
       isRefreshing = true;
 
       try {
@@ -71,6 +76,8 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
       }
     }
+    console.log("throwing error");
+    hasRetried = false;
 
     return Promise.reject(error);
   }

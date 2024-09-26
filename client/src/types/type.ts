@@ -3,3 +3,8 @@ export type payloadType = {
   name: string;
   role: string | null;
 };
+
+export enum role {
+  condidate = "candidate",
+  recruiter = "recruiter",
+}

@@ -30,3 +30,25 @@ export type roleApiType = {
   role: string;
   id: number;
 };
+// export interface {
+//   data: Data;
+// }
+
+export interface JobsData {
+  job: Job;
+  savedJobId: any;
+  companyName: string;
+  companyLogo: string;
+}
+
+export interface Job {
+  id: number;
+  createdAt: string;
+  recruiterId: number;
+  title: string;
+  companyId: number;
+  description: string;
+  location: string;
+  requirements: string;
+  isOpen: boolean;
+}

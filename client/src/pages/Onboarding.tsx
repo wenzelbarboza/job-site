@@ -3,11 +3,7 @@ import { useRoleMutate } from "../api/user.api";
 import { Button } from "../components/ui/button";
 import { useUserStore } from "../zustand/UserStore";
 import { useNavigate } from "react-router-dom";
-
-enum role {
-  condidate = "candidate",
-  recruiter = "recruiter",
-}
+import { role } from "../types/type";
 
 export const Onboarding = () => {
   const roleMutate = useRoleMutate();
