@@ -13,7 +13,7 @@ const userRouter = express.Router();
 userRouter.post("/user/signup", signUp);
 userRouter.post("/user/login", login);
 userRouter.post("/user/refresh", refresh);
-userRouter.post("/user/logout", logout);
-userRouter.post("/user/role", setRole);
+userRouter.post("/user/logout", verifyUser, logout);
+userRouter.post("/user/role", verifyUser, setRole);
 
 export { userRouter };

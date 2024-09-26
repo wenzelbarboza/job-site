@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 import { roleEnum } from "../utils/types";
 
 export const newUserProps = z.object({
@@ -15,4 +15,10 @@ export const loginProps = z.object({
 export const refreshType = z.object({
   role: z.enum([roleEnum.candidate, roleEnum.recruiter]),
   id: z.number(),
+});
+
+export const getJobsSchema = z.object({
+  location: z.string().optional(),
+  company_id: z.coerce.number().optional(),
+  searchQuery: z.string().optional(),
 });

@@ -76,3 +76,16 @@ export const applications = pgTable("applications", {
   education: text("education").notNull(),
   name: text("name").notNull(),
 });
+
+export const saved_jobs = pgTable("saved_jobs", {
+  id: serial("id").primaryKey().notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).default(
+    sql`now()`
+  ),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id),
+  jobsId: integer("jobs_id")
+    .notNull()
+    .references(() => jobs.id),
+});
