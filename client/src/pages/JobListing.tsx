@@ -2,35 +2,41 @@ import { useState } from "react";
 import { useGetJobsQuerry } from "../api/jobs.api";
 import MoonLoader from "react-spinners/MoonLoader";
 import JobCard from "../components/JobCard";
+import { Button } from "../components/ui/button";
+import { useGetCompaniesQuerry } from "../api/companies.api";
+import { State } from "country-state-city";
 
 export type JobFilter = {
-  location: string | undefined;
-  company_id: string | undefined;
-  searchQuery: string | undefined;
+  location: string;
+  company_id: string;
+  searchQuery: string;
 };
 
 export const JobListing = () => {
+  const { data: companiesRes } = useGetCompaniesQuerry();
+  console.log("companies are: ", companiesRes);
+
   const [jobsFilter, setJobsFilter] = useState<JobFilter>({
-    location: undefined,
-    company_id: undefined,
-    searchQuery: undefined,
+    location: "",
+    company_id: "",
+    searchQuery: "",
   });
 
-  const [temporaryFilter, setTemporaryFIlter] = useState<JobFilter>({
-    location: undefined,
-    company_id: undefined,
-    searchQuery: undefined,
-  });
+  console.log("job filter is: ", jobsFilter);
 
-  const handelSubmit = () => {
-    setJobsFilter(temporaryFilter);
-  };
+  const handelSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTemporaryFIlter((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setJobsFilter({
+      company_id: formData.get("company_id") as string,
+      location: formData.get("location") as string,
+      searchQuery: formData.get("searchQuery") as string,
+    });
+
+    console.log("companies id: ", formData.get("company_id"));
+    console.log("form data entries are: ", [...formData.entries()]);
   };
 
   const { data, isLoading, isError, error, refetch, isRefetching } =
@@ -62,23 +68,39 @@ export const JobListing = () => {
       ) : (
         <>
           <section>
-            <div className="flex gap-2 flex-row">
-              <input
-                type="text"
-                value={temporaryFilter.searchQuery}
-                name="searchQuery"
-                onChange={handleChange}
-                placeholder="search"
-              />
-              <input
-                type="text"
-                value={jobsFilter.location}
-                name="location"
-                onChange={handleChange}
-                placeholder="location"
-              />
-            </div>
-            <input type="submit" onSubmit={handelSubmit} />
+            <form onSubmit={handelSubmit} className="flex gap-2 ">
+              <div className="flex gap-2 flex-row">
+                <input
+                  type="text"
+                  name="searchQuery"
+                  placeholder="Search job by title...."
+                  className="text-black"
+                />
+                <select name="company_id">
+                  <option value="">select</option>
+                  {companiesRes?.data?.map((company) => (
+                    <option value={company.id}>{company.name}</option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="location"
+                  className="text-black"
+                />
+              </div>
+              <select name="company_id">
+                <option value="">select</option>
+                {State.getStatesOfCountry("IN").map(({ name }) => {
+                  return (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  );
+                })}
+              </select>
+              <Button type="submit">Search</Button>
+            </form>
           </section>
           <section>
             <h1 className="text-xl">Latest Jobs</h1>
@@ -88,6 +110,7 @@ export const JobListing = () => {
                   job={job}
                   handleRefetch={handleRefetch}
                   isRefetching={isRefetching}
+                  key={job.job.id}
                 />
               ))
             ) : (

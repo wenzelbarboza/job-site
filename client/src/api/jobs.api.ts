@@ -6,9 +6,9 @@ import { apiResponeType, JobsData } from "../types/api.types";
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/jobs";
 
 export type getJobs = {
-  location: string | undefined;
-  company_id: string | undefined;
-  searchQuery: string | undefined;
+  location: string;
+  company_id: string;
+  searchQuery: string;
 };
 export const useGetJobsQuerry = (data: getJobs) => {
   const handleQuerry = async (data: getJobs) => {
@@ -18,7 +18,7 @@ export const useGetJobsQuerry = (data: getJobs) => {
   };
 
   return useQuery({
-    queryKey: ["search"],
+    queryKey: ["search", data],
     queryFn: () => handleQuerry(data),
   });
 };

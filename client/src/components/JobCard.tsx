@@ -26,7 +26,7 @@ const JobCard = ({ job, handleRefetch, isRefetching }: Props) => {
     }
   };
   useEffect(() => {
-    console.log(disabled); // This will log the updated value of disabled
+    console.log(disabled);
   }, [disabled]);
 
   useEffect(() => {
