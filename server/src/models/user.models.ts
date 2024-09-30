@@ -17,8 +17,18 @@ export const refreshType = z.object({
   id: z.number(),
 });
 
+// job
 export const getJobsSchema = z.object({
   location: z.string().optional(),
   company_id: z.coerce.number().optional(),
   searchQuery: z.string().optional(),
+});
+
+export const getSingleJobSchema = z.object({
+  jobId: z.coerce.number(),
+});
+
+export const UpdateSingleJobSchema = z.object({
+  jobId: z.coerce.number(),
+  status: z.boolean(),
 });

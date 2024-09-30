@@ -1,19 +1,35 @@
 import { Request, Response } from "express";
 import { db } from "../db/db";
 import { companies, jobs, saved_jobs } from "../db/schema";
-import { and, eq, like } from "drizzle-orm";
+import { and, eq, ilike, like } from "drizzle-orm";
 import { asyncHandler } from "../utils/asyncHandler";
-import { getJobsSchema } from "../models/user.models";
+import {
+  getJobsSchema,
+  getSingleJobSchema,
+  UpdateSingleJobSchema,
+} from "../models/user.models";
 import { sql } from "drizzle-orm";
 import { ApiError } from "../utils/apiError";
+import { z } from "zod";
 
-type getJobs = { location: string; company_id: string; searchQuery: string };
+type getJobs = {
+  location: string;
+  company_id: string;
+  searchQuery: string;
+};
 
 export const getJobs = asyncHandler(
   async (req: Request<any, any, getJobs>, res: Response) => {
     try {
       const { location, company_id, searchQuery } = getJobsSchema.parse(
-        req.query
+        req.body
+      );
+
+      console.log(
+        "{ location, company_id, searchQuery }",
+        location,
+        company_id,
+        searchQuery
       );
 
       const userId = req.user;
@@ -29,7 +45,7 @@ export const getJobs = asyncHandler(
       }
 
       if (searchQuery) {
-        conditions.push(like(jobs.title, `%${searchQuery as string}%`));
+        conditions.push(ilike(jobs.title, `%${searchQuery as string}%`));
       }
 
       let query = db
@@ -88,6 +104,59 @@ export const updateSaved = asyncHandler(
       return res.json({
         success: true,
         message: "Jobs fetched successfully",
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message);
+    }
+  }
+);
+
+type GetSingleJob = z.infer<typeof getSingleJobSchema>;
+
+export const getSingleJob = asyncHandler(
+  async (req: Request<any, any, GetSingleJob>, res: Response) => {
+    try {
+      const { jobId } = getSingleJobSchema.parse(req.body);
+
+      const job = await db
+        .select()
+        .from(companies)
+        .where(eq(companies.id, jobId));
+
+      return res.json({
+        success: true,
+        message: "job fetched successfully",
+        data: job,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message);
+    }
+  }
+);
+type UpdateSingleJob = z.infer<typeof UpdateSingleJobSchema>;
+export const updateJobStatus = asyncHandler(
+  async (req: Request<any, any, UpdateSingleJob>, res: Response) => {
+    const userId = req.user as number;
+    try {
+      const { jobId, status } = UpdateSingleJobSchema.parse(req.body);
+
+      const verifyRes = await db
+        .select({ recruiterId: jobs.recruiterId })
+        .from(jobs)
+        .where(eq(jobs.id, jobId));
+
+      if (verifyRes[0].recruiterId !== userId) {
+        throw new ApiError(
+          401,
+          "You are not athorised to change this job status"
+        );
+      }
+
+      await db.update(jobs).set({ isOpen: status }).where(eq(jobs.id, jobId));
+
+      return res.json({
+        success: true,
+        message: "status updated successfully",
       });
     } catch (error: any) {
       throw new ApiError(400, error.message);

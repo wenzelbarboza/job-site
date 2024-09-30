@@ -11,13 +11,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors());
 app.use(helmet());
-app.use(morgan("dev"));
+app.use(morgan("common"));
 // app.use(express.static("public"));
 
 //routes imports
 import { userRouter } from "./routes/user.routes";
 import { globalCatch } from "./utils/globalCatch";
 import { jobsRouter } from "./routes/jobs.routes";
+import { companiesRouter } from "./routes/companies.routes";
 
 app.get("/", (req, res) => {
   return res.status(200).json({
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 // routes
 app.use("/api/v1", userRouter);
 app.use("/api/v1", jobsRouter);
+app.use("/api/v1", companiesRouter);
 
 //global catch
 app.use(globalCatch);
