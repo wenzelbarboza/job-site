@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetJobsQuerry } from "../api/jobs.api";
+import { useGetJobsQuery } from "../api/jobs.api";
 import MoonLoader from "react-spinners/MoonLoader";
 import JobCard from "../components/JobCard";
 import { Button } from "../components/ui/button";
@@ -40,7 +40,7 @@ export const JobListing = () => {
   };
 
   const { data, isLoading, isError, error, refetch, isRefetching } =
-    useGetJobsQuerry(jobsFilter);
+    useGetJobsQuery(jobsFilter);
   console.log("this is jobs data", data);
 
   const handleRefetch = () => {

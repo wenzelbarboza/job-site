@@ -133,6 +133,7 @@ export const getSingleJob = asyncHandler(
     }
   }
 );
+
 type UpdateSingleJob = z.infer<typeof UpdateSingleJobSchema>;
 export const updateJobStatus = asyncHandler(
   async (req: Request<any, any, UpdateSingleJob>, res: Response) => {

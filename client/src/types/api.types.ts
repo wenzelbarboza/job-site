@@ -52,3 +52,9 @@ export interface Job {
   requirements: string;
   isOpen: boolean;
 }
+export type JobData = {
+  id: number;
+  name: string;
+  createdAt: Date | null;
+  logoUrl: string;
+};

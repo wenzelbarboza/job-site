@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import axiosInstance from "../lib/utils";
-import { apiResponeType, JobsData } from "../types/api.types";
+import { apiResponeType, JobData, JobsData } from "../types/api.types";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/jobs";
 
@@ -10,8 +10,8 @@ export type getJobs = {
   company_id: string;
   searchQuery: string;
 };
-export const useGetJobsQuerry = (data: getJobs) => {
-  const handleQuerry = async (data: getJobs) => {
+export const useGetJobsQuery = (data: getJobs) => {
+  const handleQuery = async (data: getJobs) => {
     const res: AxiosResponse<apiResponeType<Array<JobsData>>> =
       await axiosInstance.post(`${userUrl}/get-jobs`, data);
     return res.data;
@@ -19,7 +19,7 @@ export const useGetJobsQuerry = (data: getJobs) => {
 
   return useQuery({
     queryKey: ["search", data],
-    queryFn: () => handleQuerry(data),
+    queryFn: () => handleQuery(data),
   });
 };
 
@@ -37,5 +37,41 @@ export const useUpdateSaved = () => {
   return useMutation({
     mutationKey: ["update-saved"],
     mutationFn: (data: UpdateSaved) => handleMutation(data),
+  });
+};
+
+type SingleJob = {
+  jobId: number;
+};
+
+export const useGetSingleJobQuery = (data: SingleJob) => {
+  const handleQuery = async (data: SingleJob) => {
+    const res: AxiosResponse<apiResponeType<Array<JobData>>> =
+      await axiosInstance.post(`${userUrl}/get-jobs`, data);
+    return res.data;
+  };
+
+  return useQuery({
+    queryKey: ["single-job", data],
+    queryFn: () => handleQuery(data),
+  });
+};
+
+//types
+type UpdateStatus = {
+  jobId: number;
+  status: boolean;
+};
+
+export const useUpdateStatusMutation = () => {
+  const handleQuery = async (data: UpdateStatus) => {
+    const res: AxiosResponse<apiResponeType<Array<JobData>>> =
+      await axiosInstance.post(`${userUrl}/get-jobs`, data);
+    return res.data;
+  };
+
+  return useMutation({
+    mutationKey: ["update-status"],
+    mutationFn: handleQuery,
   });
 };
