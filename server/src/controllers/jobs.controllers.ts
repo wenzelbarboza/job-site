@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import {
   getJobsSchema,
   getSingleJobSchema,
-  UpdateSingleJobSchema,
+  UpdateJobStatusSchema,
 } from "../models/user.models";
 import { sql } from "drizzle-orm";
 import { ApiError } from "../utils/apiError";
@@ -134,12 +134,12 @@ export const getSingleJob = asyncHandler(
   }
 );
 
-type UpdateSingleJob = z.infer<typeof UpdateSingleJobSchema>;
+type UpdateJobStatus = z.infer<typeof UpdateJobStatusSchema>;
 export const updateJobStatus = asyncHandler(
-  async (req: Request<any, any, UpdateSingleJob>, res: Response) => {
+  async (req: Request<any, any, UpdateJobStatus>, res: Response) => {
     const userId = req.user as number;
     try {
-      const { jobId, status } = UpdateSingleJobSchema.parse(req.body);
+      const { jobId, status } = UpdateJobStatusSchema.parse(req.body);
 
       const verifyRes = await db
         .select({ recruiterId: jobs.recruiterId })

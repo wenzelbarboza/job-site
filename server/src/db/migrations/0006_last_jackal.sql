@@ -1,0 +1,1 @@
+ALTER TABLE "jobsite_applications" ALTER COLUMN "status" SET DEFAULT 'applying';

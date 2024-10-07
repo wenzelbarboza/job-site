@@ -28,7 +28,7 @@ export const getSingleJobSchema = z.object({
   jobId: z.coerce.number(),
 });
 
-export const UpdateSingleJobSchema = z.object({
+export const UpdateJobStatusSchema = z.object({
   jobId: z.coerce.number(),
   status: z.boolean(),
 });

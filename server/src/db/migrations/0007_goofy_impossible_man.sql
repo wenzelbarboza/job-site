@@ -1,0 +1,1 @@
+ALTER TABLE "jobsite_applications" DROP COLUMN IF EXISTS "name";

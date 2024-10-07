@@ -69,12 +69,11 @@ export const applications = pgTable("applications", {
   candidateId: integer("candidate_id")
     .notNull()
     .references(() => users.id),
-  status: statusEnum("status").notNull(),
+  status: statusEnum("status").default("applying").notNull(),
   resume: text("resume").notNull(),
   skills: text("skills").notNull(),
-  experience: text("experience").notNull(),
+  experience: integer("experience").notNull(),
   education: text("education").notNull(),
-  name: text("name").notNull(),
 });
 
 export const saved_jobs = pgTable("saved_jobs", {
