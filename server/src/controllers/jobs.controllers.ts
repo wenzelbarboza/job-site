@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../db/db";
-import { companies, jobs, saved_jobs } from "../db/schema";
+import { companies, jobs, saved_jobs, users } from "../db/schema";
 import { and, eq, ilike, like } from "drizzle-orm";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
@@ -11,6 +11,7 @@ import {
 import { sql } from "drizzle-orm";
 import { ApiError } from "../utils/apiError";
 import { z } from "zod";
+import { roleEnum } from "../utils/types";
 
 type getJobs = {
   location: string;
@@ -161,6 +162,64 @@ export const updateJobStatus = asyncHandler(
       });
     } catch (error: any) {
       throw new ApiError(400, error.message);
+    }
+  }
+);
+
+const CreateJobSchema = z.object({
+  companyId: z.coerce.number(),
+  description: z.string(),
+  location: z.string(),
+  requirements: z.string(),
+  title: z.string(),
+});
+
+type CreateJob = z.infer<typeof CreateJobSchema>;
+
+export const createJob = asyncHandler(
+  async (req: Request<any, any, CreateJob>, res: Response) => {
+    // test
+    // return res.status(200).json({
+    //   message: "success",
+    // });
+
+    const userId = req.user as number;
+    try {
+      const { companyId, description, location, requirements, title } =
+        CreateJobSchema.parse(req.body);
+
+      const userdeatils = await db
+        .select({
+          userRole: users.role,
+        })
+        .from(users)
+        .where(eq(users.id, userId));
+
+      if (
+        userdeatils.length > 0 &&
+        userdeatils[0].userRole === roleEnum.candidate
+      ) {
+        throw new ApiError(
+          403,
+          "you have to be a recruiter to create job posting"
+        );
+      }
+
+      const dbRes = await db.insert(jobs).values({
+        companyId,
+        recruiterId: userId,
+        description,
+        location,
+        requirements,
+        title,
+      });
+
+      return res.json({
+        success: true,
+        message: "job created successfully",
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in creating job");
     }
   }
 );

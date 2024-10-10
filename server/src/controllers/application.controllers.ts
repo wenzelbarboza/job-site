@@ -50,7 +50,7 @@ export const applyJob = asyncHandler(
       // change file name
       const resume = `${superbase_url}/storage/v1/object/public/resumes/${fileName}`;
       const { data, error } = await supabase.storage
-        .from("job-sit")
+        .from("resume")
         .upload(fileName, file.buffer);
 
       if (error) {

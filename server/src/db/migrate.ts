@@ -5,8 +5,6 @@ import "dotenv/config";
 
 const db_url = process.env.DATABASE_URL || "";
 
-console.log("database url is:  ", db_url);
-
 const migrationClient = postgres(db_url, { max: 1 });
 
 async function runMigrations() {
