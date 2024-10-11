@@ -107,3 +107,32 @@ export const getApplications = asyncHandler(
     }
   }
 );
+
+const getApplicantApplicationSchema = z.object({
+  jobId: z.coerce.number(),
+});
+
+type GetApplicantApplications = z.infer<typeof getApplicantApplicationSchema>;
+
+export const getApplicantApplications = asyncHandler(
+  async (req: Request<any, any, GetApplicantApplications>, res: Response) => {
+    const candidateId = req.user as number;
+
+    try {
+      // const { jobId } = getApplicationSchema.parse(req.body);
+
+      const applicationList = await db
+        .select()
+        .from(applications)
+        .where(eq(applications.candidateId, candidateId));
+
+      return res.json({
+        success: true,
+        message: "applicarions fetched successfully",
+        data: applicationList,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in fetching application");
+    }
+  }
+);

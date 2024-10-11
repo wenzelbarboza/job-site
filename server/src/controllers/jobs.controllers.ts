@@ -223,3 +223,43 @@ export const createJob = asyncHandler(
     }
   }
 );
+
+export const getSavedJobs = asyncHandler(
+  async (req: Request, res: Response) => {
+    // test
+    // return res.status(200).json({
+    //   message: "success",
+    // });
+
+    const userId = req.user as number;
+
+    try {
+      const savedJobsForUser = await db
+        .select({
+          savedJobId: saved_jobs.id,
+          jobId: jobs.id,
+          title: jobs.title,
+          description: jobs.description,
+          location: jobs.location,
+          requirements: jobs.requirements,
+          isOpen: jobs.isOpen,
+          companyName: companies.name,
+          companyLogoUrl: companies.logoUrl,
+          jobCreatedAt: jobs.createdAt,
+          savedAt: saved_jobs.createdAt,
+        })
+        .from(saved_jobs)
+        .innerJoin(jobs, eq(saved_jobs.jobsId, jobs.id))
+        .innerJoin(companies, eq(jobs.companyId, companies.id))
+        .where(eq(saved_jobs.userId, userId));
+
+      return res.json({
+        success: true,
+        message: "saved jobs fetched successfully",
+        data: savedJobsForUser,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in fetching jobs");
+    }
+  }
+);
