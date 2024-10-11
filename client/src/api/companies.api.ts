@@ -3,7 +3,7 @@ import { apiResponeType } from "../types/api.types";
 import axiosInstance from "../lib/utils";
 import { useQuery } from "@tanstack/react-query";
 
-const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/companie";
+const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/company";
 
 export interface CompaniesList {
   id: number;
@@ -14,7 +14,7 @@ export interface CompaniesList {
 export const useGetCompaniesQuerry = () => {
   const handleQuerry = async () => {
     const res: AxiosResponse<apiResponeType<Array<CompaniesList>>> =
-      await axiosInstance.post(`${userUrl}/get-companies`);
+      await axiosInstance.post(`${userUrl}/get-company`);
     return res.data;
   };
 

@@ -63,56 +63,61 @@ export const JobListing = () => {
 
   return (
     <>
+      <section>
+        <h1 className="text-6xl sm:text-7xl font-extrabold text-center pb-8 gradiet-title">
+          Latest Jobs
+        </h1>
+      </section>
       {isLoading ? (
         <MoonLoader />
       ) : (
         <>
-          <section>
-            <form onSubmit={handelSubmit} className="flex gap-2 ">
-              <div className="flex gap-2 flex-row">
+          <section className="pb-8 w-full">
+            <form
+              onSubmit={handelSubmit}
+              className="flex gap-2 flex-col w-full flex-1"
+            >
+              <div className="flex flex-1 gap-3">
                 <input
                   type="text"
                   name="searchQuery"
                   placeholder="Search job by title...."
-                  className="text-black"
+                  className="text-black flex-1"
                 />
+                <Button type="submit">Search</Button>
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
+                <select name="company_id">
+                  <option value="">select</option>
+                  {State.getStatesOfCountry("IN").map(({ name }) => {
+                    return (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    );
+                  })}
+                </select>
                 <select name="company_id">
                   <option value="">select</option>
                   {companiesRes?.data?.map((company) => (
                     <option value={company.id}>{company.name}</option>
                   ))}
                 </select>
-                <input
-                  type="text"
-                  name="location"
-                  placeholder="location"
-                  className="text-black"
-                />
               </div>
-              <select name="company_id">
-                <option value="">select</option>
-                {State.getStatesOfCountry("IN").map(({ name }) => {
-                  return (
-                    <option key={name} value={name}>
-                      {name}
-                    </option>
-                  );
-                })}
-              </select>
-              <Button type="submit">Search</Button>
             </form>
           </section>
           <section>
-            <h1 className="text-xl">Latest Jobs</h1>
             {data?.data != undefined && data?.data.length > 0 ? (
-              data?.data?.map((job) => (
-                <JobCard
-                  job={job}
-                  handleRefetch={handleRefetch}
-                  isRefetching={isRefetching}
-                  key={job.job.id}
-                />
-              ))
+              <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {data?.data?.map((job) => (
+                  <JobCard
+                    job={job}
+                    handleRefetch={handleRefetch}
+                    isRefetching={isRefetching}
+                    key={job.job.id}
+                  />
+                ))}
+              </div>
             ) : (
               <h1>no data found....</h1>
             )}

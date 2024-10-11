@@ -23,7 +23,7 @@ export const useGetJobsQuery = (data: getJobs) => {
   });
 };
 
-type UpdateSaved = { isSaved: number; jobsId: number };
+type UpdateSaved = { isSaved: boolean; jobsId: number };
 
 export const useUpdateSaved = () => {
   const handleMutation = async (data: UpdateSaved) => {
