@@ -46,8 +46,8 @@ type SingleJob = {
 
 export const useGetSingleJobQuery = (data: SingleJob) => {
   const handleQuery = async (data: SingleJob) => {
-    const res: AxiosResponse<apiResponeType<Array<JobData>>> =
-      await axiosInstance.post(`${userUrl}/get-jobs`, data);
+    const res: AxiosResponse<apiResponeType<JobData>> =
+      await axiosInstance.post(`${userUrl}/get-job`, data);
     return res.data;
   };
 
@@ -65,8 +65,10 @@ type UpdateStatus = {
 
 export const useUpdateStatusMutation = () => {
   const handleQuery = async (data: UpdateStatus) => {
-    const res: AxiosResponse<apiResponeType<Array<JobData>>> =
-      await axiosInstance.post(`${userUrl}/get-jobs`, data);
+    const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
+      `${userUrl}/update-status`,
+      data
+    );
     return res.data;
   };
 

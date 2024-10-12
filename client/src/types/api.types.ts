@@ -52,9 +52,25 @@ export interface Job {
   requirements: string;
   isOpen: boolean;
 }
-export type JobData = {
+
+export type company = {
   id: number;
   name: string;
   createdAt: Date | null;
   logoUrl: string;
+};
+
+export type JobData = {
+  jobs: {
+    id: number;
+    createdAt: Date | null;
+    recruiterId: number;
+    title: string;
+    companyId: number;
+    description: string;
+    location: string;
+    requirements: string;
+    isOpen: boolean;
+  };
+  companies: company | null;
 };

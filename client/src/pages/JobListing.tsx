@@ -5,6 +5,15 @@ import JobCard from "../components/JobCard";
 import { Button } from "../components/ui/button";
 import { useGetCompaniesQuerry } from "../api/companies.api";
 import { State } from "country-state-city";
+import { Input } from "../components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 
 export type JobFilter = {
   location: string;
@@ -15,6 +24,9 @@ export type JobFilter = {
 export const JobListing = () => {
   const { data: companiesRes } = useGetCompaniesQuerry();
   console.log("companies are: ", companiesRes);
+
+  const [tempLocation, setTempLocation] = useState("");
+  const [tempCompanyId, setTempCompanyId] = useState("");
 
   const [jobsFilter, setJobsFilter] = useState<JobFilter>({
     location: "",
@@ -30,10 +42,12 @@ export const JobListing = () => {
     const formData = new FormData(form);
 
     setJobsFilter({
-      company_id: formData.get("company_id") as string,
-      location: formData.get("location") as string,
       searchQuery: formData.get("searchQuery") as string,
+      company_id: tempCompanyId,
+      location: tempLocation,
     });
+    // company_id: formData.get("company_id") as string,
+    // location: formData.get("location") as string,
 
     console.log("companies id: ", formData.get("company_id"));
     console.log("form data entries are: ", [...formData.entries()]);
@@ -61,6 +75,11 @@ export const JobListing = () => {
     );
   }
 
+  const handleClearFiter = () => {
+    setTempCompanyId("");
+    setTempLocation("");
+  };
+
   return (
     <>
       <section>
@@ -77,32 +96,61 @@ export const JobListing = () => {
               onSubmit={handelSubmit}
               className="flex gap-2 flex-col w-full flex-1"
             >
-              <div className="flex flex-1 gap-3">
-                <input
+              <div className="flex flex-1 gap-1">
+                <Input
                   type="text"
                   name="searchQuery"
                   placeholder="Search job by title...."
                   className="text-black flex-1"
                 />
-                <Button type="submit">Search</Button>
+                <Button type="submit" variant="blue">
+                  Search
+                </Button>
               </div>
-              <div className="flex flex-1 flex-col gap-1">
-                <select name="company_id">
-                  <option value="">select</option>
-                  {State.getStatesOfCountry("IN").map(({ name }) => {
-                    return (
-                      <option key={name} value={name}>
-                        {name}
-                      </option>
-                    );
-                  })}
-                </select>
-                <select name="company_id">
-                  <option value="">select</option>
-                  {companiesRes?.data?.map((company) => (
-                    <option value={company.id}>{company.name}</option>
-                  ))}
-                </select>
+              <div className="flex flex-1 flex-col sm:flex-row gap-1">
+                <Select
+                  value={tempLocation}
+                  onValueChange={(value) => setTempLocation(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="select location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {State.getStatesOfCountry("IN").map(({ name }) => {
+                        return (
+                          <SelectItem key={name} value={name}>
+                            {name}
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={tempCompanyId}
+                  onValueChange={(value) => setTempCompanyId(value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="select company" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {companiesRes?.data?.map((company) => (
+                        <SelectItem value={String(company.id)}>
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Button
+                  onClick={handleClearFiter}
+                  className=" sm:w-1/2"
+                  variant="destructive"
+                >
+                  clear filter
+                </Button>
               </div>
             </form>
           </section>
