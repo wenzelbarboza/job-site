@@ -60,6 +60,18 @@ export type company = {
   logoUrl: string;
 };
 
+export type Application = {
+  id: number;
+  createdAt: Date | null;
+  jobId: number;
+  status: "applying" | "interviewing" | "hired" | "rejected";
+  candidateId: number;
+  resume: string;
+  skills: string;
+  experience: number;
+  education: string;
+};
+
 export type JobData = {
   jobs: {
     id: number;
@@ -73,4 +85,14 @@ export type JobData = {
     isOpen: boolean;
   };
   companies: company | null;
+  application: Application | null;
 };
+
+// export type applyToJobType = {
+//   experience: number;
+//   skills: string;
+//   // education: "Intermediate" | "Graduate" | "Post Graduate";
+//   education: string;
+//   jobId: number;
+//   resume: File;
+// };

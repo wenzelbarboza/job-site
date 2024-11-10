@@ -10,7 +10,9 @@ const applicationRoute = express.Router();
 applicationRoute.post(
   "/application/apply",
   verifyUser,
-  upload.single("pdfFile"),
+  // upload.none(),
+  upload.any(),
+
   applyJob
 );
 applicationRoute.post(

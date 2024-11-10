@@ -33,13 +33,20 @@ type ApplyJob = z.infer<typeof ApplyJobSchema>;
 export const applyJob = asyncHandler(
   async (req: Request<any, any, ApplyJob>, res: Response) => {
     const candidateId = req.user as number;
-    const { file } = req;
+    const files = req.files as Express.Multer.File[] | undefined;
+    let file: Express.Multer.File | undefined;
+
+    if (files && files.length) {
+      file = files[0];
+    }
 
     if (!file) {
       throw new ApiError(400, "required file is missing");
     }
+    const split = file.originalname.split(".");
+    const ext = split[split.length - 1];
     const random = Math.floor(Math.random() * 90000);
-    const fileName = `resume-${random}-${candidateId}`;
+    const fileName = `resume-${random}-${candidateId}.${ext}`;
 
     try {
       const { education, experience, skills, jobId } = ApplyJobSchema.parse(
@@ -54,7 +61,10 @@ export const applyJob = asyncHandler(
         .upload(fileName, file.buffer);
 
       if (error) {
-        throw new ApiError(400, "error submitting application");
+        throw new ApiError(
+          400,
+          error.message || "error submitting application"
+        );
       }
 
       await db.insert(applications).values({

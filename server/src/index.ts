@@ -4,15 +4,6 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import "dotenv/config";
-const app = express();
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors());
-app.use(helmet());
-app.use(morgan("common"));
-// app.use(express.static("public"));
 
 //routes imports
 import { userRouter } from "./routes/user.routes";
@@ -21,6 +12,17 @@ import { jobsRouter } from "./routes/jobs.routes";
 import { companiesRouter } from "./routes/companies.routes";
 import { applicationRoute } from "./routes/application.routes";
 
+const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(cors());
+app.use(helmet());
+app.use(morgan("common"));
+// app.use(express.static("public"));
+
+// app.use("/uploads", express.static("uploads"));
 app.get("/", (req, res) => {
   return res.status(200).json({
     message: "welcome to JungleJobs backend",

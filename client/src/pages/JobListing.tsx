@@ -58,7 +58,6 @@ export const JobListing = () => {
   console.log("this is jobs data", data);
 
   const handleRefetch = () => {
-    console.log("refetch clicked");
     refetch();
   };
 

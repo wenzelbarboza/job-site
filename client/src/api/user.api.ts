@@ -25,6 +25,7 @@ export const useLoginMutation = () => {
 };
 
 export const useSignUpMutation = () => {
+
   const handelMutation = async (signUpData: signUpType) => {
     const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
       `${userUrl}/signup`,

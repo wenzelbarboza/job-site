@@ -41,11 +41,12 @@ export const createCompany = asyncHandler(
       throw new ApiError(400, "required file is missing");
     }
 
-    const random = Math.floor(Math.random() * 90000);
-    const fileName = `resume-${random}-${name}`;
 
     try {
       const { name } = CreateComapanySchema.parse(req.body);
+
+    const random = Math.floor(Math.random() * 90000);
+    const fileName = `resume-${random}-${name}`;
 
       // TODO
       // change file name

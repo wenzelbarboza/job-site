@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../db/db";
-import { companies, jobs, saved_jobs, users } from "../db/schema";
+import { applications, companies, jobs, saved_jobs, users } from "../db/schema";
 import { and, eq, ilike, like } from "drizzle-orm";
 import { asyncHandler } from "../utils/asyncHandler";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../models/user.models";
 import { sql } from "drizzle-orm";
 import { ApiError } from "../utils/apiError";
-import { z } from "zod";
+import { z, ZodPipeline } from "zod";
 import { roleEnum } from "../utils/types";
 
 type getJobs = {
@@ -90,6 +90,7 @@ export const updateSaved = asyncHandler(
   async (req: Request<any, any, UpdateSaved>, res: Response) => {
     const { isSaved, jobsId } = req.body;
     const userId = req.user as number;
+    console.log("isSaved: ", isSaved);
 
     try {
       if (isSaved) {
@@ -112,22 +113,41 @@ export const updateSaved = asyncHandler(
   }
 );
 
+// a comm
+
 type GetSingleJob = z.infer<typeof getSingleJobSchema>;
 
 export const getSingleJob = asyncHandler(
   async (req: Request<any, any, GetSingleJob>, res: Response) => {
+    const userId = req.user as number;
     try {
       const { jobId } = getSingleJobSchema.parse(req.body);
 
       const job = await db
         .select()
-        .from(companies)
-        .where(eq(companies.id, jobId));
+        .from(jobs)
+        .leftJoin(companies, eq(companies.id, jobs.companyId))
+        .leftJoin(
+          applications,
+          and(
+            eq(applications.jobId, jobId),
+            eq(applications.candidateId, userId)
+          )
+        )
+        .where(eq(jobs.id, jobId));
+
+      if (job.length == 0) {
+        return res.status(200).json({
+          success: true,
+          message: "no jobs found",
+          data: null,
+        });
+      }
 
       return res.json({
         success: true,
         message: "job fetched successfully",
-        data: job,
+        data: job[0],
       });
     } catch (error: any) {
       throw new ApiError(400, error.message);
