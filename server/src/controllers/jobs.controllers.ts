@@ -81,38 +81,6 @@ export const getJobs = asyncHandler(
   }
 );
 
-type UpdateSaved = {
-  isSaved: boolean;
-  jobsId: number;
-};
-
-export const updateSaved = asyncHandler(
-  async (req: Request<any, any, UpdateSaved>, res: Response) => {
-    const { isSaved, jobsId } = req.body;
-    const userId = req.user as number;
-    console.log("isSaved: ", isSaved);
-
-    try {
-      if (isSaved) {
-        await db
-          .delete(saved_jobs)
-          .where(
-            and(eq(saved_jobs.userId, userId), eq(saved_jobs.jobsId, jobsId))
-          );
-      } else {
-        await db.insert(saved_jobs).values({ jobsId, userId });
-      }
-
-      return res.json({
-        success: true,
-        message: "Jobs fetched successfully",
-      });
-    } catch (error: any) {
-      throw new ApiError(400, error.message);
-    }
-  }
-);
-
 // a comm
 
 type GetSingleJob = z.infer<typeof getSingleJobSchema>;
@@ -155,6 +123,152 @@ export const getSingleJob = asyncHandler(
   }
 );
 
+export const getSavedJobs = asyncHandler(
+  async (req: Request, res: Response) => {
+    // test
+    // return res.status(200).json({
+    //   message: "success",
+    // });
+
+    const userId = req.user as number;
+
+    try {
+      const savedJobsForUser = await db
+        .select({
+          savedJobId: saved_jobs.id,
+          jobId: jobs.id,
+          title: jobs.title,
+          description: jobs.description,
+          location: jobs.location,
+          requirements: jobs.requirements,
+          isOpen: jobs.isOpen,
+          companyName: companies.name,
+          companyLogoUrl: companies.logoUrl,
+          jobCreatedAt: jobs.createdAt,
+          savedAt: saved_jobs.createdAt,
+        })
+        .from(saved_jobs)
+        .innerJoin(jobs, eq(saved_jobs.jobsId, jobs.id))
+        .innerJoin(companies, eq(jobs.companyId, companies.id))
+        .where(eq(saved_jobs.userId, userId));
+
+      return res.json({
+        success: true,
+        message: "saved jobs fetched successfully",
+        data: savedJobsForUser,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in fetching jobs");
+    }
+  }
+);
+
+const getJobApplicaionsSchema = z.object({
+  jobId: z.coerce.number(),
+});
+
+export const getJobApplicaions = asyncHandler(
+  async (req: Request, res: Response) => {
+    // return res.status(200).json({
+    //   message: "success",
+    // });
+
+    const userId = req.user as number;
+
+    try {
+      const { jobId } = getJobApplicaionsSchema.parse(req.body);
+
+      // export const applications = pgTable("applications", {
+      //   id: serial("id").primaryKey().notNull(),
+      //   createdAt: timestamp("created_at", { withTimezone: true }).default(
+      //     sql`now()`
+      //   ),
+      //   jobId: integer("job_id")
+      //     .notNull()
+      //     .references(() => jobs.id, { onDelete: "cascade" }),
+      //   candidateId: integer("candidate_id")
+      //     .notNull()
+      //     .references(() => users.id),
+      //   status: statusEnum("status").default("applying").notNull(),
+      //   resume: text("resume").notNull(),
+      //   skills: text("skills").notNull(),
+      //   experience: integer("experience").notNull(),
+      //   education: text("education").notNull(),
+      // });
+
+      // {
+      //     jobId: jobs.id,
+      //     //candidate id,
+      //     // name
+      //     //resume
+      //     //skils
+      //     //application status
+      //     //education
+      //     //createdAt
+      //     //experience
+      //   }
+
+      const jobsList = await db
+        .select({
+          id: applications.id,
+          candidateId: users.id,
+          name: users.name,
+          resume: applications.resume,
+          skills: applications.skills,
+          status: applications.status,
+          education: applications.education,
+          experience: applications.experience,
+          createdAt: applications.createdAt,
+        })
+        .from(applications)
+        .innerJoin(users, eq(applications.candidateId, users.id))
+        .innerJoin(jobs, eq(applications.jobId, jobs.id))
+        .innerJoin(companies, eq(jobs.companyId, companies.id))
+        .where(eq(applications.jobId, jobId));
+
+      return res.json({
+        success: true,
+        message: "saved jobs fetched successfully",
+        data: jobsList,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in fetching jobs");
+    }
+  }
+);
+
+type UpdateSaved = {
+  isSaved: boolean;
+  jobsId: number;
+};
+
+export const updateSaved = asyncHandler(
+  async (req: Request<any, any, UpdateSaved>, res: Response) => {
+    const { isSaved, jobsId } = req.body;
+    const userId = req.user as number;
+    console.log("isSaved: ", isSaved);
+
+    try {
+      if (isSaved) {
+        await db
+          .delete(saved_jobs)
+          .where(
+            and(eq(saved_jobs.userId, userId), eq(saved_jobs.jobsId, jobsId))
+          );
+      } else {
+        await db.insert(saved_jobs).values({ jobsId, userId });
+      }
+
+      return res.json({
+        success: true,
+        message: "Jobs fetched successfully",
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message);
+    }
+  }
+);
+
 type UpdateJobStatus = z.infer<typeof UpdateJobStatusSchema>;
 export const updateJobStatus = asyncHandler(
   async (req: Request<any, any, UpdateJobStatus>, res: Response) => {
@@ -185,6 +299,8 @@ export const updateJobStatus = asyncHandler(
     }
   }
 );
+
+//create
 
 const CreateJobSchema = z.object({
   companyId: z.coerce.number(),
@@ -240,46 +356,6 @@ export const createJob = asyncHandler(
       });
     } catch (error: any) {
       throw new ApiError(400, error.message || "error in creating job");
-    }
-  }
-);
-
-export const getSavedJobs = asyncHandler(
-  async (req: Request, res: Response) => {
-    // test
-    // return res.status(200).json({
-    //   message: "success",
-    // });
-
-    const userId = req.user as number;
-
-    try {
-      const savedJobsForUser = await db
-        .select({
-          savedJobId: saved_jobs.id,
-          jobId: jobs.id,
-          title: jobs.title,
-          description: jobs.description,
-          location: jobs.location,
-          requirements: jobs.requirements,
-          isOpen: jobs.isOpen,
-          companyName: companies.name,
-          companyLogoUrl: companies.logoUrl,
-          jobCreatedAt: jobs.createdAt,
-          savedAt: saved_jobs.createdAt,
-        })
-        .from(saved_jobs)
-        .innerJoin(jobs, eq(saved_jobs.jobsId, jobs.id))
-        .innerJoin(companies, eq(jobs.companyId, companies.id))
-        .where(eq(saved_jobs.userId, userId));
-
-      return res.json({
-        success: true,
-        message: "saved jobs fetched successfully",
-        data: savedJobsForUser,
-      });
-    } catch (error: any) {
-      throw new ApiError(400, error.message || "error in fetching jobs");
     }
   }
 );
