@@ -88,6 +88,18 @@ export type JobData = {
   application: Application | null;
 };
 
+export type JobApplicationsType = {
+  id: number;
+  candidateId: number;
+  name: string | null;
+  resume: string;
+  skills: string;
+  status: "applying" | "interviewing" | "hired" | "rejected";
+  education: string;
+  experience: number;
+  createdAt: Date | null;
+}[];
+
 // export type applyToJobType = {
 //   experience: number;
 //   skills: string;

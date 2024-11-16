@@ -1,9 +1,16 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery} from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import axiosInstance from "../lib/utils";
-import { apiResponeType, JobData, JobsData } from "../types/api.types";
+import {
+  apiResponeType,
+  JobApplicationsType,
+  JobData,
+  JobsData,
+} from "../types/api.types";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/jobs";
+
+
 
 export type getJobs = {
   location: string;
@@ -72,8 +79,25 @@ export const useUpdateStatusMutation = () => {
     return res.data;
   };
 
+
   return useMutation({
     mutationKey: ["update-status"],
     mutationFn: handleQuery,
+  });
+};
+
+type GetJobApplication = {
+  jobId: number;
+};
+export const useGetJobApplicaionsQuerry = (data: GetJobApplication) => {
+  const handleQuery = async (data: GetJobApplication) => {
+    const res: AxiosResponse<apiResponeType<JobApplicationsType>> =
+      await axiosInstance.post(`${userUrl}/get-job-applications`, data);
+    return res.data;
+  };
+
+  return useQuery({
+    queryKey: ["get-job-applications", data],
+    queryFn: () => handleQuery(data),
   });
 };

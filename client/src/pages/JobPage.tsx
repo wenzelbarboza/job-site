@@ -1,6 +1,9 @@
 import { useParams } from "react-router-dom";
-import { useGetSingleJobQuery, useUpdateStatusMutation } from "../api/jobs.api";
-import MoonLoader from "react-spinners/MoonLoader";
+import {
+  useGetJobApplicaionsQuerry,
+  useGetSingleJobQuery,
+  useUpdateStatusMutation,
+} from "../api/jobs.api";
 import { DoorClosed, DoorOpen, PinIcon } from "lucide-react";
 import MDEditor from "@uiw/react-md-editor";
 import {
@@ -14,17 +17,37 @@ import {
 import { useEffect, useState } from "react";
 import { useUserStore } from "../zustand/UserStore";
 import JobDrawer from "../components/JobDrawer";
+import ApplicationCard from "../components/ApplicationCard";
 
 export const JobPage = () => {
   const userId = useUserStore((value) => value.user?.id);
   const { id } = useParams();
+  const jobId = Number(id);
   const { mutateAsync } = useUpdateStatusMutation();
   console.log("id from params is: ", id);
 
   const { data, isLoading, isError, refetch } = useGetSingleJobQuery({
     jobId: id as unknown as number,
   });
-  const didApply = data?.data?.application?.candidateId ? true : false;
+  const didApply = !!data?.data?.application?.candidateId;
+
+  const {
+    data: applicationData,
+    error: applicationsError,
+    refetch: applicationsRefetch,
+  } = useGetJobApplicaionsQuerry({
+    jobId,
+  });
+  let isCandidate = true;
+  const refetchApplications = async () => {
+    await applicationsRefetch();
+  };
+
+  if (!isLoading && !isError) {
+    isCandidate = data?.data?.jobs.recruiterId != userId;
+  }
+
+  console.log("list of all the applicants: ", applicationData);
 
   const [status, setStatus] = useState<string>("closed");
 
@@ -125,16 +148,39 @@ export const JobPage = () => {
           style={{ whiteSpace: "pre-wrap" }}
           className="bg-transparent sm:text-lg"
         />
-        {didApply ? (
-          <></>
-        ) : (
-          <JobDrawer
-            job={data.data.jobs}
-            applied={didApply}
-            refetch={HandleRefetch}
-            companyName={data.data.companies?.name || ""}
-          />
+        {data.data.jobs.recruiterId != userId &&
+          (didApply ? (
+            // TODO
+            //display application details of this user
+            <></>
+          ) : (
+            <JobDrawer
+              job={data.data.jobs}
+              applied={didApply}
+              refetch={HandleRefetch}
+              companyName={data.data.companies?.name || ""}
+            />
+          ))}
+        {(applicationData?.data?.length || 0) > 0 && !isCandidate && (
+          <div className="flex flex-col gap-4">
+            <h2 className="text-xl">Applications</h2>
+            {applicationData?.data?.map((application) => {
+              return (
+                <ApplicationCard
+                  key={application.id}
+                  {...application}
+                  isCandidate={isCandidate}
+                  companyName={data.data?.companies?.name || ""}
+                  jobTitle={data.data?.jobs.title || ""}
+                  refetchApplications={refetchApplications}
+                />
+              );
+            })}
+          </div>
         )}
+        {/* {applicationData?.data?.map((application) => {
+        return  <ApplicationCard key={application.id} {...application} isCandidate={isCandidate}  companyName={data.data?.companies?.name || "" } jobTitle={data.data?.jobs.title || ""}  refetchApplications={refetchApplications}  />
+        })} */}
       </div>
     </>
   );

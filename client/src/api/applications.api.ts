@@ -1,9 +1,10 @@
-import axios, { AxiosResponse } from "axios";
-import { apiResponeType, applyToJobType } from "../types/api.types";
+import { AxiosResponse } from "axios";
+import { apiResponeType } from "../types/api.types";
 import axiosInstance from "../lib/utils";
-import { useMutation } from "@tanstack/react-query";
+import {QueryClient, useMutation} from "@tanstack/react-query";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/application";
+const queryClient = new QueryClient();
 
 export const useApplyToJobMutation = () => {
   const handleMutation = async (data: FormData) => {
@@ -18,5 +19,31 @@ export const useApplyToJobMutation = () => {
   return useMutation({
     mutationKey: ["apply-job"],
     mutationFn: handleMutation,
+  });
+};
+
+type UpdateApplicationStatus = {
+  status: string;
+  applicationId: number;
+  // status: "applied" | "interviewing" | "hired" | "rejected"
+};
+
+export const useUpdateApplicationStatusMutation = () => {
+  const handleQuery = async (data: UpdateApplicationStatus ) => {
+    const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
+        `${userUrl}/update-status`,
+        data
+    );
+    return res.data;
+  };
+
+  const onSuccessHandler = async () => {
+    await queryClient.invalidateQueries({queryKey:["get-job-applications"]})
+  }
+
+  return useMutation({
+    mutationKey: ["update-application-status"],
+    mutationFn: handleQuery,
+    onSuccess: onSuccessHandler,
   });
 };
