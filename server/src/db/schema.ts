@@ -52,7 +52,7 @@ export const jobs = pgTable("jobs", {
 });
 
 export const statusEnum = pgEnum("status", [
-  "applying",
+  "applied",
   "interviewing",
   "hired",
   "rejected",
@@ -69,7 +69,7 @@ export const applications = pgTable("applications", {
   candidateId: integer("candidate_id")
     .notNull()
     .references(() => users.id),
-  status: statusEnum("status").default("applying").notNull(),
+  status: statusEnum("status").default("applied").notNull(),
   resume: text("resume").notNull(),
   skills: text("skills").notNull(),
   experience: integer("experience").notNull(),

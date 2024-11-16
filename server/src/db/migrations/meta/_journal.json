@@ -64,6 +64,13 @@
       "when": 1727880418328,
       "tag": "0008_parallel_jackpot",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1731484403537,
+      "tag": "0009_same_firedrake",
+      "breakpoints": true
     }
   ]
 }

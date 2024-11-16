@@ -146,3 +146,33 @@ export const getApplicantApplications = asyncHandler(
     }
   }
 );
+
+const UpdateStatusSchema = z.object({
+  // status: z.enum(["applied", "interviewing", "hired", "rejected"]),
+    status: z.enum(["applied", "interviewing", "hired", "rejected"]),
+  // status: z.string(),
+  applicationId: z.coerce.number(),
+});
+
+export const updateStatus = asyncHandler(
+  async (req: Request, res: Response) => {
+    const candidateId = req.user as number;
+    console.log("request body inside updateStatus: ",req.body);
+
+    try {
+      const { applicationId, status } = UpdateStatusSchema.parse(req.body);
+
+      await db
+        .update(applications)
+        .set({ status })
+        .where(eq(applications.id, applicationId));
+
+      return res.status(200).json({
+        success: true,
+        message: "status updated successfully",
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error updationg the status");
+    }
+  }
+);
