@@ -1,6 +1,6 @@
 import { JobsData } from "../types/api.types";
-import { FaHeart } from "react-icons/fa";
-import { useUpdateSaved } from "../api/jobs.api";
+import { FaHeart, FaTrash } from "react-icons/fa";
+import { useDeleteJobMutation, useUpdateSaved } from "../api/jobs.api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,17 +12,19 @@ import {
 } from "./ui/card";
 import { PinIcon } from "lucide-react";
 import { Button } from "./ui/button";
+
 type Props = {
   job: JobsData;
-  handleRefetch: () => void;
-  isRefetching: boolean;
+  handleRefetch?: () => void;
+  isRefetching?: boolean;
   isMyJob?: boolean;
 };
+
 const JobCard = ({
   job,
   handleRefetch,
   isRefetching,
-  isMyJob = true,
+  isMyJob = false,
 }: Props) => {
   const navigate = useNavigate();
 
@@ -30,22 +32,23 @@ const JobCard = ({
   const [disabled, setDisabled] = useState(false);
   const [isSaved, setIsSaved] = useState(!!job.savedJobId);
   const { mutateAsync } = useUpdateSaved();
+  const { mutateAsync: deleteMutateAsync } = useDeleteJobMutation();
 
   const handelUpdateSaved = async () => {
     try {
       setDisabled(true);
       setIsSaved((prevState) => !prevState);
       await mutateAsync({ isSaved: !!job.savedJobId, jobsId: job.job.id });
-      handleRefetch();
+      if (handleRefetch) handleRefetch();
       setDisabled(false);
     } catch (error) {
       console.log(error);
       setIsSaved((prevState) => !prevState);
     }
   };
-  useEffect(() => {
-    console.log(disabled);
-  }, [disabled]);
+  // useEffect(() => {
+  //   console.log(disabled);
+  // }, [disabled]);
 
   useEffect(() => {
     console.log("mount");
@@ -58,11 +61,28 @@ const JobCard = ({
     navigate(`/job/${id}`);
   };
 
+  const handleJobDelete = async () => {
+    try {
+      await deleteMutateAsync({ jobId: job.job.id });
+      if (handleRefetch) handleRefetch();
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <Card className="flex flex-col">
         <CardHeader>
-          <CardTitle>{job.job.title}</CardTitle>
+          <div className="flex justify-between items-center w-full">
+            <CardTitle>{job.job.title}</CardTitle>
+            {isMyJob && (
+              <FaTrash
+                className="text-red-600 cursor-pointer"
+                onClick={handleJobDelete}
+              />
+            )}
+          </div>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 flex-1">
           <div className="flex justify-between w-full">

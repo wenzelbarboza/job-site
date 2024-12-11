@@ -1,9 +1,10 @@
 import { AxiosResponse } from "axios";
 import { apiResponeType } from "../types/api.types";
 import axiosInstance from "../lib/utils";
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/company";
+const queryClient = new QueryClient();
 
 export interface CompaniesList {
   id: number;
@@ -21,5 +22,25 @@ export const useGetCompaniesQuerry = () => {
   return useQuery({
     queryKey: ["companies"],
     queryFn: () => handleQuerry(),
+  });
+};
+
+type CreateComapny = {
+  formdata: FormData;
+};
+
+export const useCreateCompanyMutate = () => {
+  const handelMutation = async (data: CreateComapny) => {
+    console.log("data received inside querry mutate: ", data);
+    const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
+      `${userUrl}/create-company`,
+      data.formdata
+    );
+    return res.data;
+  };
+
+  return useMutation({
+    mutationKey: ["create-companny"],
+    mutationFn: handelMutation,
   });
 };

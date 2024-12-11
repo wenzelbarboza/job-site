@@ -12,7 +12,7 @@ companiesRouter.post("/company/get-company", verifyUser, getCompanies);
 
 companiesRouter.post(
   "/company/create-company",
-  upload.single("pdfFile"),
+  upload.single("logo"),
   createCompany
 );
 

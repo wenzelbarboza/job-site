@@ -81,8 +81,6 @@ export const getJobs = asyncHandler(
   }
 );
 
-// a comm
-
 type GetSingleJob = z.infer<typeof getSingleJobSchema>;
 
 export const getSingleJob = asyncHandler(
@@ -125,27 +123,13 @@ export const getSingleJob = asyncHandler(
 
 export const getSavedJobs = asyncHandler(
   async (req: Request, res: Response) => {
-    // test
-    // return res.status(200).json({
-    //   message: "success",
-    // });
-
     const userId = req.user as number;
 
     try {
       const savedJobsForUser = await db
         .select({
-          savedJobId: saved_jobs.id,
-          jobId: jobs.id,
-          title: jobs.title,
-          description: jobs.description,
-          location: jobs.location,
-          requirements: jobs.requirements,
-          isOpen: jobs.isOpen,
-          companyName: companies.name,
-          companyLogoUrl: companies.logoUrl,
-          jobCreatedAt: jobs.createdAt,
-          savedAt: saved_jobs.createdAt,
+          jobs: jobs,
+          companies: companies,
         })
         .from(saved_jobs)
         .innerJoin(jobs, eq(saved_jobs.jobsId, jobs.id))
@@ -169,44 +153,10 @@ const getJobApplicaionsSchema = z.object({
 
 export const getJobApplicaions = asyncHandler(
   async (req: Request, res: Response) => {
-    // return res.status(200).json({
-    //   message: "success",
-    // });
-
     const userId = req.user as number;
 
     try {
       const { jobId } = getJobApplicaionsSchema.parse(req.body);
-
-      // export const applications = pgTable("applications", {
-      //   id: serial("id").primaryKey().notNull(),
-      //   createdAt: timestamp("created_at", { withTimezone: true }).default(
-      //     sql`now()`
-      //   ),
-      //   jobId: integer("job_id")
-      //     .notNull()
-      //     .references(() => jobs.id, { onDelete: "cascade" }),
-      //   candidateId: integer("candidate_id")
-      //     .notNull()
-      //     .references(() => users.id),
-      //   status: statusEnum("status").default("applying").notNull(),
-      //   resume: text("resume").notNull(),
-      //   skills: text("skills").notNull(),
-      //   experience: integer("experience").notNull(),
-      //   education: text("education").notNull(),
-      // });
-
-      // {
-      //     jobId: jobs.id,
-      //     //candidate id,
-      //     // name
-      //     //resume
-      //     //skils
-      //     //application status
-      //     //education
-      //     //createdAt
-      //     //experience
-      //   }
 
       const jobsList = await db
         .select({
@@ -314,12 +264,9 @@ type CreateJob = z.infer<typeof CreateJobSchema>;
 
 export const createJob = asyncHandler(
   async (req: Request<any, any, CreateJob>, res: Response) => {
-    // test
-    // return res.status(200).json({
-    //   message: "success",
-    // });
-
     const userId = req.user as number;
+    console.log("create job values: ", req.body);
+    console.log("useId: ", userId);
     try {
       const { companyId, description, location, requirements, title } =
         CreateJobSchema.parse(req.body);
@@ -357,5 +304,53 @@ export const createJob = asyncHandler(
     } catch (error: any) {
       throw new ApiError(400, error.message || "error in creating job");
     }
+  }
+);
+
+export const getCreatedJobs = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user as number;
+
+    try {
+      let recruiterJobs = await db
+        .select({
+          job: jobs,
+          savedJobId: saved_jobs.id,
+          companyName: companies.name,
+          companyLogo: companies.logoUrl,
+        })
+        .from(jobs)
+        .leftJoin(
+          saved_jobs,
+          and(
+            eq(jobs.id, saved_jobs.jobsId),
+            eq(saved_jobs.userId, userId as number)
+          )
+        )
+        .leftJoin(companies, eq(jobs.companyId, companies.id))
+        .where(eq(jobs.recruiterId, userId));
+
+      return res.json({
+        success: true,
+        message: "saved jobs fetched successfully",
+        data: recruiterJobs,
+      });
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "error in fetching jobs");
+    }
+  }
+);
+
+const deleteJobSchema = z.object({
+  jobId: z.coerce.number(),
+});
+
+type DeleteJob = z.infer<typeof deleteJobSchema>;
+
+export const deleteJob = asyncHandler(
+  async (req: Request<any, any, DeleteJob>, res: Response) => {
+    return res.status(200).send({
+      message: "you have arrived",
+    });
   }
 );

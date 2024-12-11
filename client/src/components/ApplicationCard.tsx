@@ -17,15 +17,16 @@ type Props = {
   name: string | null;
   resume: string;
   skills: string;
-  status: "applying" | "interviewing" | "hired" | "rejected";
+  status: "applied" | "interviewing" | "hired" | "rejected";
   education: string;
   experience: number;
   createdAt: Date | null;
   isCandidate: boolean;
-  // new
   companyName: string;
   jobTitle: string;
-  refetchApplications: () => void;
+  refetchApplications?: () => void;
+  // new
+  isLoading: boolean;
 };
 
 const ApplicationCard = ({
@@ -41,6 +42,7 @@ const ApplicationCard = ({
   jobTitle,
   companyName,
   refetchApplications,
+  isLoading,
 }: Props) => {
   // return <div>{JSON.stringify(data)}</div>;
 
@@ -57,7 +59,7 @@ const ApplicationCard = ({
   const handleStatusChange = async (status: string) => {
     console.log("job status is: ", status);
     await updateStatusMutation.mutateAsync({ status, applicationId: id });
-    refetchApplications();
+    if (refetchApplications) refetchApplications();
   };
 
   return (
@@ -97,7 +99,7 @@ const ApplicationCard = ({
               <Select
                 onValueChange={handleStatusChange}
                 defaultValue={status}
-                disabled={updateStatusMutation.isPending}
+                disabled={updateStatusMutation.isPending || isLoading}
               >
                 <SelectTrigger>status: {status}</SelectTrigger>
                 <SelectContent>

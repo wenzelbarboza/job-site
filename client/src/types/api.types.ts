@@ -94,7 +94,7 @@ export type JobApplicationsType = {
   name: string | null;
   resume: string;
   skills: string;
-  status: "applying" | "interviewing" | "hired" | "rejected";
+  status: "applied" | "interviewing" | "hired" | "rejected";
   education: string;
   experience: number;
   createdAt: Date | null;
@@ -108,3 +108,31 @@ export type JobApplicationsType = {
 //   jobId: number;
 //   resume: File;
 // };
+
+export type SavedJobsType = {
+  jobs: Job;
+  companies: companies;
+};
+
+type companies = {
+  id: number;
+  name: string;
+  createdAt: Date | null;
+  logoUrl: string;
+};
+
+export type UserApplicaions = {
+  applications: {
+    jobId: number;
+    status: "applied" | "interviewing" | "hired" | "rejected";
+    id: number;
+    createdAt: Date | null;
+    candidateId: number;
+    resume: string;
+    skills: string;
+    experience: number;
+    education: string;
+  };
+  jobs: Job | null;
+  companies: companies | null;
+};

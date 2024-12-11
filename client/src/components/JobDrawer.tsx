@@ -17,7 +17,6 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { useApplyToJobMutation } from "../api/applications.api";
-import axios from "axios";
 
 const applicationUrl = import.meta.env.VITE_BASE_URL + "/api/v1/application";
 
@@ -92,16 +91,16 @@ const JobDrawer = ({ applied, job, refetch, user, companyName }: PropsType) => {
       formdata.append("skills", data?.skills || null);
       formdata.append("resume", data?.resume[0] || null);
 
-      console.log("printing the form data in formSubmit: ", formdata);
+      // console.log("printing the form data in formSubmit: ", formdata);
 
-      const axiosRes = (
-        await axios.post(`${applicationUrl}/apply`, formdata, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-      ).data;
-      console.log("axiosRes: ", axiosRes);
+      // const axiosRes = (
+      //   await axios.post(`${applicationUrl}/apply`, formdata, {
+      //     headers: {
+      //       "Content-Type": "multipart/form-data",
+      //     },
+      //   })
+      // ).data;
+      // console.log("axiosRes: ", axiosRes);
       const res = await mutateAsync(formdata);
       console.log("response is: ", res);
     } catch (error: any) {

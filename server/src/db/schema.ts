@@ -20,7 +20,9 @@ export const users = pgTable("users", {
   email: text("email"),
   password: text("password").default(""),
   refreshToken: text("refresh_token"),
-  role: text("role").$type<roleEnum.candidate | roleEnum.recruiter>(),
+  role: text("role")
+    .$type<roleEnum.candidate | roleEnum.recruiter>()
+    .default(roleEnum.candidate),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

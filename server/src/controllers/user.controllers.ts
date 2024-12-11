@@ -34,8 +34,8 @@ export const signUp = asyncHandler(
         success: true,
         message: "Registration successfull",
       });
-    } catch (error) {
-      throw error;
+    } catch (error: any) {
+      throw new ApiError(400, error.message || "registration unsuccessful");
     }
   }
 );
@@ -74,7 +74,7 @@ export const login = asyncHandler(
         .update(users)
         .set({ refreshToken })
         .where(eq(users.id, user[0].id));
-
+      // refreshToken;
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,
@@ -91,6 +91,8 @@ export const login = asyncHandler(
 
 export const refresh = asyncHandler(async (req: Request, res: Response) => {
   const refreshTokenOld = req.cookies.refreshToken;
+
+  console.log("refresh token is:", refreshTokenOld);
 
   if (!refreshTokenOld) throw new ApiError(401, "invalid credentials");
 

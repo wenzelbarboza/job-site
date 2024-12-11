@@ -3,7 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { Request, Response } from "express";
 import { ApiError } from "../utils/apiError";
 import { db } from "../db/db";
-import { applications } from "../db/schema";
+import { applications, companies, jobs } from "../db/schema";
 import { supabase, superbase_url } from "../utils/superBase";
 import { eq } from "drizzle-orm";
 
@@ -131,9 +131,21 @@ export const getApplicantApplications = asyncHandler(
     try {
       // const { jobId } = getApplicationSchema.parse(req.body);
 
+      // <ApplicationCard
+      //     key={application.id}
+      //     {...application}
+      //     isCandidate={isCandidate}
+      //     companyName={data.data?.companies?.name || ""}
+      //     jobTitle={data.data?.jobs.title || ""}
+      //     refetchApplications={refetchApplications}
+      //     isLoading={isLoading}
+      //   />
+
       const applicationList = await db
         .select()
         .from(applications)
+        .leftJoin(jobs, eq(jobs.id, applications.jobId))
+        .leftJoin(companies, eq(companies.id, jobs.companyId))
         .where(eq(applications.candidateId, candidateId));
 
       return res.json({
@@ -149,7 +161,7 @@ export const getApplicantApplications = asyncHandler(
 
 const UpdateStatusSchema = z.object({
   // status: z.enum(["applied", "interviewing", "hired", "rejected"]),
-    status: z.enum(["applied", "interviewing", "hired", "rejected"]),
+  status: z.enum(["applied", "interviewing", "hired", "rejected"]),
   // status: z.string(),
   applicationId: z.coerce.number(),
 });
@@ -157,7 +169,7 @@ const UpdateStatusSchema = z.object({
 export const updateStatus = asyncHandler(
   async (req: Request, res: Response) => {
     const candidateId = req.user as number;
-    console.log("request body inside updateStatus: ",req.body);
+    console.log("request body inside updateStatus: ", req.body);
 
     try {
       const { applicationId, status } = UpdateStatusSchema.parse(req.body);

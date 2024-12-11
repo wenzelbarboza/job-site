@@ -1,4 +1,4 @@
-import { useMutation, useQuery} from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import axiosInstance from "../lib/utils";
 import {
@@ -6,11 +6,10 @@ import {
   JobApplicationsType,
   JobData,
   JobsData,
+  SavedJobsType,
 } from "../types/api.types";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/jobs";
-
-
 
 export type getJobs = {
   location: string;
@@ -79,7 +78,6 @@ export const useUpdateStatusMutation = () => {
     return res.data;
   };
 
-
   return useMutation({
     mutationKey: ["update-status"],
     mutationFn: handleQuery,
@@ -99,5 +97,73 @@ export const useGetJobApplicaionsQuerry = (data: GetJobApplication) => {
   return useQuery({
     queryKey: ["get-job-applications", data],
     queryFn: () => handleQuery(data),
+  });
+};
+
+type CreateJob = {
+  title: string;
+  companyId: string | number;
+  description: string;
+  location: string;
+  requirements: string;
+};
+
+export const useCreateJobMutation = () => {
+  const handleQuery = async (data: CreateJob) => {
+    data.companyId = Number(data.companyId);
+    const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
+      `${userUrl}/create-job`,
+      data
+    );
+    return res.data;
+  };
+  return useMutation({
+    mutationKey: ["create-job"],
+    mutationFn: handleQuery,
+  });
+};
+
+export const useGetSavedQuery = () => {
+  const handleQuery = async () => {
+    const res: AxiosResponse<apiResponeType<Array<SavedJobsType>>> =
+      await axiosInstance.post(`${userUrl}/get-saved`);
+    return res.data;
+  };
+
+  return useQuery({
+    queryKey: ["get-saved"],
+    queryFn: () => handleQuery(),
+  });
+};
+
+// working
+export const useGetCreatedJobs = () => {
+  const handleQuery = async () => {
+    const res: AxiosResponse<apiResponeType<Array<JobsData>>> =
+      await axiosInstance.post(`${userUrl}/get-created-jobs`);
+    return res.data;
+  };
+
+  return useQuery({
+    queryKey: ["created-jobs"],
+    queryFn: () => handleQuery(),
+  });
+};
+
+type DeleteJob = {
+  jobId: number;
+};
+
+export const useDeleteJobMutation = () => {
+  const handelMutation = async (data: DeleteJob) => {
+    const res: AxiosResponse<apiResponeType> = await axiosInstance.post(
+      `${userUrl}/create-job`,
+      data
+    );
+    return res.data;
+  };
+  return useMutation({
+    mutationKey: ["delete-job"],
+    mutationFn: handelMutation,
   });
 };

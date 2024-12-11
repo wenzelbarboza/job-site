@@ -33,7 +33,7 @@ export const JobPage = () => {
 
   const {
     data: applicationData,
-    error: applicationsError,
+    // error: applicationsError,
     refetch: applicationsRefetch,
   } = useGetJobApplicaionsQuerry({
     jobId,
@@ -173,13 +173,24 @@ export const JobPage = () => {
                   companyName={data.data?.companies?.name || ""}
                   jobTitle={data.data?.jobs.title || ""}
                   refetchApplications={refetchApplications}
+                  isLoading={isLoading}
                 />
               );
             })}
           </div>
         )}
         {/* {applicationData?.data?.map((application) => {
-        return  <ApplicationCard key={application.id} {...application} isCandidate={isCandidate}  companyName={data.data?.companies?.name || "" } jobTitle={data.data?.jobs.title || ""}  refetchApplications={refetchApplications}  />
+          return (
+            <ApplicationCard
+              key={application.id}
+              {...application}
+              isCandidate={isCandidate}
+              companyName={data.data?.companies?.name || ""}
+              jobTitle={data.data?.jobs.title || ""}
+              refetchApplications={refetchApplications}
+              isLoading={isLoading}
+            />
+          );
         })} */}
       </div>
     </>

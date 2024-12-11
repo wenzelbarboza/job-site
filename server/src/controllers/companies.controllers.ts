@@ -41,15 +41,18 @@ export const createCompany = asyncHandler(
       throw new ApiError(400, "required file is missing");
     }
 
-
     try {
       const { name } = CreateComapanySchema.parse(req.body);
 
-    const random = Math.floor(Math.random() * 90000);
-    const fileName = `resume-${random}-${name}`;
-
       // TODO
       // change file name
+      // add the extension
+      // reload the company lisd on successful uplad
+      const splitName = file.originalname.split(".");
+      const ext = splitName[splitName.length - 1];
+
+      const random = Math.floor(Math.random() * 90000);
+      const fileName = `company-logo-${random}-${name}.${ext}`;
 
       const comapnyLogoUrl = `${superbase_url}/storage/v1/object/public/job-site/${fileName}`;
       const { data, error } = await supabase.storage
