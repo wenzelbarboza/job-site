@@ -2,7 +2,7 @@ import { useGetSavedQuery } from "../api/jobs.api";
 import JobCard from "../components/JobCard";
 
 export const SavedJobs = () => {
-  const { data, isLoading, isError, refetch, isFetching } = useGetSavedQuery();
+  const { data, isLoading, refetch, isFetching } = useGetSavedQuery();
 
   if (isLoading) {
     return <h1>Loading...</h1>;

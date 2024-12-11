@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Drawer,
   DrawerClose,
@@ -17,8 +16,6 @@ import { Controller, FieldValues, useForm } from "react-hook-form";
 import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Label } from "./ui/label";
 import { useApplyToJobMutation } from "../api/applications.api";
-
-const applicationUrl = import.meta.env.VITE_BASE_URL + "/api/v1/application";
 
 type JobsType =
   | {
@@ -69,13 +66,12 @@ const schema = z.object({
     ),
 });
 
-const JobDrawer = ({ applied, job, refetch, user, companyName }: PropsType) => {
+const JobDrawer = ({ applied, job, companyName }: PropsType) => {
   const { mutateAsync } = useApplyToJobMutation();
   const {
     register,
     handleSubmit,
     control,
-    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),

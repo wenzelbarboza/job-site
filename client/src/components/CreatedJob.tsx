@@ -1,4 +1,3 @@
-import React from "react";
 import { useGetCreatedJobs } from "../api/jobs.api";
 import JobCard from "./JobCard";
 

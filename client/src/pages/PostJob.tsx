@@ -13,10 +13,10 @@ import {
 import { State } from "country-state-city";
 import { useGetCompaniesQuerry } from "../api/companies.api";
 import { Input } from "../components/ui/input";
-import { Button, buttonVariants } from "../components/ui/button";
 import MDEditor from "@uiw/react-md-editor";
 import { useCreateJobMutation } from "../api/jobs.api";
 import AddCompanyDrawer from "../components/AddCompanyDrawer";
+import { buttonVariants } from "../components/ui/button";
 
 const creatJobSchema = z.object({
   title: z.string().min(1, "title is required"),
@@ -44,12 +44,7 @@ export const Postjob = () => {
     resolver: zodResolver(creatJobSchema),
   });
 
-  const {
-    data: companiesRes,
-    isLoading,
-    isError,
-    refetch,
-  } = useGetCompaniesQuerry();
+  const { data: companiesRes, refetch } = useGetCompaniesQuerry();
   const { mutateAsync, isPending } = useCreateJobMutation();
 
   console.log("the loaded companies are:", companiesRes);

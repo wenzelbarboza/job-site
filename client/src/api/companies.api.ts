@@ -1,10 +1,9 @@
 import { AxiosResponse } from "axios";
 import { apiResponeType } from "../types/api.types";
 import axiosInstance from "../lib/utils";
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const userUrl = import.meta.env.VITE_BASE_URL + "/api/v1/company";
-const queryClient = new QueryClient();
 
 export interface CompaniesList {
   id: number;

@@ -1,4 +1,3 @@
-import React from "react";
 import { useGetUserAppplicaion } from "../api/applications.api";
 import ApplicationCard from "./ApplicationCard";
 import { useUserStore } from "../zustand/UserStore";
