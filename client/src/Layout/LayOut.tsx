@@ -26,7 +26,9 @@ export const LayOut = () => {
       })
 
       .catch((error) => {
+        console.log("refresh error");
         console.error(error);
+        // userStore.setLoading(false);
       })
 
       .finally(() => {

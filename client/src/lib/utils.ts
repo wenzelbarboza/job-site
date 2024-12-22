@@ -83,7 +83,6 @@ export function cn(...inputs: ClassValue[]) {
 // );
 
 // export default axiosInstance;
-
 let isRefreshing = false;
 let failedQueue: Array<{
   resolve: (token: string) => void;
@@ -102,7 +101,7 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 // Create Axios instance
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL + "/api/v1",
   withCredentials: true,
 });
@@ -110,17 +109,27 @@ export const axiosInstance = axios.create({
 // Request interceptor: attach accessToken
 axiosInstance.interceptors.request.use(
   (config) => {
-    console.log("inside request");
-    const { accessToken } = useUserStore.getState(); // Get token from Zustand
-    console.log("-------zustand token------:", accessToken);
+    // Get token directly from store without hooks
+    const accessToken = useUserStore.getState().accessToken;
+
     if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
-    console.log("---headers axios-----:,", config.headers.Authorization);
     return config;
   },
   (error) => Promise.reject(error)
 );
+
+// Refresh token function - moved before response interceptor
+const refreshAccessToken = async () => {
+  const response = await axios.post(
+    // Use base axios to avoid interceptor loop
+    import.meta.env.VITE_BASE_URL + "/api/v1/user/refresh",
+    {},
+    { withCredentials: true }
+  );
+  return response.data;
+};
 
 // Response interceptor: handle 401 errors and refresh token
 axiosInstance.interceptors.response.use(
@@ -131,44 +140,44 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const { setAccessToken, setUser } = useUserStore.getState();
-
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers["Authorization"] = `Bearer ${token}`;
-            return axiosInstance(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+        try {
+          const token = await new Promise<string>((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          });
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return axiosInstance(originalRequest);
+        } catch (err) {
+          return Promise.reject(err);
+        }
       }
 
       isRefreshing = true;
 
       try {
-        // Call your refresh token endpoint
         const { accessToken: newAccessToken } = await refreshAccessToken();
 
-        // Update Zustand store with new token
-        setAccessToken(newAccessToken);
+        // Update Zustand store
+        useUserStore.getState().setAccessToken(newAccessToken);
+
+        // Update request headers
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         // Process queued requests
         processQueue(null, newAccessToken);
 
-        // Retry the original request with new token
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
         return axiosInstance(originalRequest);
       } catch (err) {
         processQueue(err, null);
 
-        console.error("Token refresh failed:", err);
+        // Clear user data
+        const store = useUserStore.getState();
+        store.setUser(null);
+        store.setAccessToken(null);
 
-        // Log the user out on refresh failure
-        setUser(null);
-        setAccessToken(null);
-        // window.location.href = "/login"; // Redirect to login
-        // window.location.href = "/"; // Redirect to login
+        // Optional: Redirect to login
+        // window.location.href = '/login';
+
         return Promise.reject(err);
       } finally {
         isRefreshing = false;
@@ -178,15 +187,5 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Refresh token function
-const refreshAccessToken = async () => {
-  const response = await axiosInstance.post(
-    "/user/refresh", // Your backend refresh endpoint
-    {},
-    { withCredentials: true } // Ensure cookies are sent with the request
-  );
-  return response.data; // Assuming response.data contains { accessToken }
-};
 
 export default axiosInstance;
