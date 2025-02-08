@@ -74,7 +74,9 @@ export const login = asyncHandler(
         .update(users)
         .set({ refreshToken })
         .where(eq(users.id, user[0].id));
+
       // refreshToken;
+
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         secure: true,

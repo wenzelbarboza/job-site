@@ -14,13 +14,19 @@ import { applicationRoute } from "./routes/application.routes";
 
 const app = express();
 
+if (!process.env.ALLOWED_ORIGIN) {
+  throw new Error("ALLOWED_ORIGIN is not defined");
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGIN,
+    credentials: true,
+  })
+);
 app.use(helmet());
 app.use(morgan("common"));
 // app.use(express.static("public"));

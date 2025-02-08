@@ -46,8 +46,7 @@ export const createCompany = asyncHandler(
 
       // TODO
       // change file name
-      // add the extension
-      // reload the company lisd on successful uplad
+
       const splitName = file.originalname.split(".");
       const ext = splitName[splitName.length - 1];
 
