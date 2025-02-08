@@ -90,7 +90,7 @@ export const JobListing = () => {
         <MoonLoader />
       ) : (
         <>
-          <section className="pb-8 w-full">
+          <section className="pb-8 w-full ">
             <form
               onSubmit={handelSubmit}
               className="flex gap-2 flex-col w-full flex-1"
@@ -153,7 +153,7 @@ export const JobListing = () => {
               </div>
             </form>
           </section>
-          <section>
+          <section className="pb-10">
             {data?.data != undefined && data?.data.length > 0 ? (
               <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {data?.data?.map((job) => (
