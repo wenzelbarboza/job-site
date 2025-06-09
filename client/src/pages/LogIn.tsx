@@ -52,7 +52,7 @@ export const LogIn = ({ isOpen, setIsOpen }: props) => {
       const res = await loginMutation.mutateAsync(formData);
       console.log("login response is: ", res.accessToken);
       userStore.setAccessToken(res.accessToken);
-      alert(JSON.stringify(res));
+      // alert(JSON.stringify(res));
       const decoded = jwtDecode<payloadType>(res.accessToken);
       console.log("the access token fetched just now is: ", decoded);
       userStore.setUser({
