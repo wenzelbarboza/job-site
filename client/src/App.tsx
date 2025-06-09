@@ -66,11 +66,7 @@ const router = createBrowserRouter([
       },
       {
         path: "signup",
-        element: (
-          <ProtectedRoute>
-            <SignUp />
-          </ProtectedRoute>
-        ),
+        element: <SignUp />,
       },
       {
         path: "/job/:id",
